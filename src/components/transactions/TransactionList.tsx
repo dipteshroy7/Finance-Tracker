@@ -37,7 +37,7 @@ export default function TransactionList() {
               totalIncome={group.totalIncome}
               totalExpense={group.totalExpense}
             />
-            <div className="mx-4 glass-card overflow-hidden divide-y divide-white/5">
+            <div className="mx-4 md:mx-0 glass-card overflow-hidden divide-y divide-white/5 border border-white/5 shadow-xl shadow-black/20 rounded-2xl mb-8">
               {group.transactions.map((tx) => (
                 <TransactionItem
                   key={tx.id}

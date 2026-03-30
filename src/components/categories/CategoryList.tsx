@@ -4,11 +4,19 @@ import useCategoryStore from '../../store/categoryStore'
 import useTransactionStore from '../../store/transactionStore'
 import CategoryItem from './CategoryItem'
 import CategoryForm from './CategoryForm'
-import Modal from '../shared/Modal'
 import ConfirmDialog from '../shared/ConfirmDialog'
 import EmptyState from '../shared/EmptyState'
 import LoadingSpinner from '../shared/LoadingSpinner'
-import Button from '../ui/Button'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
 export default function CategoryList() {
   const categories = useCategoryStore((s) => s.categories)
@@ -29,28 +37,34 @@ export default function CategoryList() {
     <>
       <div className="px-4 pt-5">
         {/* Tab toggle */}
-        <div className="flex rounded-2xl bg-gray-100 dark:bg-white/5 p-1 gap-1 mb-5">
-          {(['expense', 'income'] as CategoryType[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => setActiveTab(t)}
-              className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 capitalize ${
-                activeTab === t
-                  ? `${t === 'income' ? 'gradient-income' : 'gradient-expense'} text-white shadow-lg`
-                  : 'text-text-muted hover:text-text dark:hover:text-text-dark'
-              }`}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CategoryType)}>
+          <TabsList className="w-full h-11 p-1 mb-5">
+            <TabsTrigger
+              value="expense"
+              className={cn(
+                "flex-1 h-full text-sm font-medium capitalize",
+                activeTab === 'expense' && "!bg-destructive !text-white shadow-sm"
+              )}
             >
-              {t}
-            </button>
-          ))}
-        </div>
+              Expense
+            </TabsTrigger>
+            <TabsTrigger
+              value="income"
+              className={cn(
+                "flex-1 h-full text-sm font-medium capitalize",
+                activeTab === 'income' && "!bg-emerald-500 !text-white shadow-sm"
+              )}
+            >
+              Income
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         <Button
           onClick={() => {
             setEditingCategory(null)
             setShowForm(true)
           }}
-          size="sm"
           className="w-full"
         >
           + Add {activeTab} category
@@ -63,7 +77,7 @@ export default function CategoryList() {
           description={`Add a category to start tracking ${activeTab}s`}
         />
       ) : (
-        <div className="mx-4 mt-4 glass-card overflow-hidden divide-y divide-white/5">
+        <div className="mx-4 md:mx-0 mt-4 rounded-2xl glass-card overflow-hidden divide-y divide-white/5 border border-white/5 shadow-xl shadow-black/20 mb-8">
           {filtered.map((cat) => (
             <CategoryItem
               key={cat.id}
@@ -78,17 +92,25 @@ export default function CategoryList() {
         </div>
       )}
 
-      <Modal
-        isOpen={showForm}
-        onClose={() => setShowForm(false)}
-        title={editingCategory ? 'Edit Category' : 'New Category'}
-      >
-        <CategoryForm
-          editingCategory={editingCategory}
-          defaultType={activeTab}
-          onClose={() => setShowForm(false)}
-        />
-      </Modal>
+      <Dialog open={showForm} onOpenChange={(open) => !open && setShowForm(false)}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-white/10 glass-card">
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle className="text-xl">
+              {editingCategory ? 'Edit Category' : 'Create Category'}
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              {editingCategory ? 'Edit an existing category' : 'Create a new category'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-6">
+            <CategoryForm
+              editingCategory={editingCategory}
+              defaultType={activeTab}
+              onClose={() => setShowForm(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <ConfirmDialog
         isOpen={!!deletingCategory}

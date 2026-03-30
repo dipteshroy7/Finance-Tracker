@@ -21,7 +21,7 @@ export default function SummaryCards() {
   ]
 
   return (
-    <div className="grid grid-cols-3 gap-3 px-4">
+    <div className="grid grid-cols-3 gap-3">
       {cards.map((card) => (
         <div key={card.label} className={`${card.gradient} rounded-2xl px-3 py-4 shadow-lg`}>
           <div className="flex items-center gap-1.5 mb-2">

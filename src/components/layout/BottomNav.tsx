@@ -1,7 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { TABS } from '../../utils/constants'
 
-const icons: Record<string, (active: boolean) => JSX.Element> = {
+import type { ReactNode } from 'react'
+
+const icons: Record<string, (active: boolean) => ReactNode> = {
   receipt: (active) => (
     <svg className="w-5 h-5" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
       {active ? (
@@ -45,7 +47,7 @@ export default function BottomNav() {
   const navigate = useNavigate()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 glass pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 glass pb-[env(safe-area-inset-bottom)]">
       <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       <div className="flex h-16">
         {TABS.map((tab) => {

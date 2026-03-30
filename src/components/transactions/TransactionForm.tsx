@@ -5,8 +5,18 @@ import useCategoryStore from '../../store/categoryStore'
 import useAccountStore from '../../store/accountStore'
 import useUIStore from '../../store/uiStore'
 import NumberPad from '../shared/NumberPad'
-import Button from '../ui/Button'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toLocalDatetime, combineDatetime } from '../../utils/formatters'
+import { cn } from '@/lib/utils'
 
 export default function TransactionForm() {
   const editingTransaction = useUIStore((s) => s.editingTransaction)
@@ -54,15 +64,9 @@ export default function TransactionForm() {
     .filter((c) => c.type === (type === 'transfer' ? 'expense' : type))
 
   const amountColor =
-    type === 'expense' ? 'text-expense' : type === 'income' ? 'text-emerald-500' : 'text-primary-light'
+    type === 'expense' ? 'text-destructive' : type === 'income' ? 'text-emerald-500' : 'text-primary'
 
-  const tabStyles = {
-    expense: 'bg-expense text-white shadow-sm',
-    income: 'bg-emerald-500 text-white shadow-sm',
-    transfer: 'bg-primary text-white shadow-sm',
-  }
-
-  const formatCurrency = (value: number) => {
+  const formatCurrencyAmount = (value: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
@@ -98,40 +102,53 @@ export default function TransactionForm() {
     }
   }
 
-  /* ---- shared field styles ---- */
-  const inputClass =
-    'w-full h-11 rounded-lg bg-gray-100 dark:bg-white/8 border-0 px-4 text-sm text-text dark:text-text-dark placeholder-text-muted/60 outline-none focus:ring-2 focus:ring-primary/40 transition-all'
-
   return (
     <>
       {/* ── Transaction Type Tabs ── */}
       <div className="px-5 pt-5">
-        <div className="flex w-full h-11 rounded-lg bg-gray-100 dark:bg-white/8 p-1 gap-1">
-          {(['expense', 'income', 'transfer'] as TransactionType[]).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={`flex-1 h-full text-sm font-medium rounded-md transition-all capitalize ${
-                type === t ? tabStyles[t] : 'text-text-muted hover:text-text dark:hover:text-text-dark'
-              }`}
+        <Tabs value={type} onValueChange={(v) => setType(v as TransactionType)}>
+          <TabsList className="w-full h-11 p-1">
+            <TabsTrigger
+              value="expense"
+              className={cn(
+                "flex-1 h-full text-sm font-medium",
+                type === 'expense' && "!bg-destructive !text-white shadow-sm"
+              )}
             >
-              {t}
-            </button>
-          ))}
-        </div>
+              Expense
+            </TabsTrigger>
+            <TabsTrigger
+              value="income"
+              className={cn(
+                "flex-1 h-full text-sm font-medium",
+                type === 'income' && "!bg-emerald-500 !text-white shadow-sm"
+              )}
+            >
+              Income
+            </TabsTrigger>
+            <TabsTrigger
+              value="transfer"
+              className={cn(
+                "flex-1 h-full text-sm font-medium",
+                type === 'transfer' && "!bg-primary !text-primary-foreground shadow-sm"
+              )}
+            >
+              Transfer
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* ── Amount Display ── */}
       <button
         type="button"
         onClick={() => setShowNumPad(!showNumPad)}
-        className="w-full py-6 px-5 flex flex-col items-center justify-center gap-1 hover:bg-black/3 dark:hover:bg-white/3 transition-colors"
+        className="w-full py-6 px-5 flex flex-col items-center justify-center gap-1 hover:bg-muted/50 transition-colors"
       >
-        <span className={`text-4xl font-bold tracking-tight ${amountColor}`}>
-          {formatCurrency(amount)}
+        <span className={cn("text-4xl font-bold tracking-tight", amountColor)}>
+          {formatCurrencyAmount(amount)}
         </span>
-        <span className="text-xs text-text-muted mt-1">
+        <span className="text-xs text-muted-foreground mt-1">
           {showNumPad ? 'Tap to hide calculator' : 'Tap to show calculator'}
         </span>
       </button>
@@ -144,114 +161,110 @@ export default function TransactionForm() {
       )}
 
       {/* ── Form Fields ── */}
-      <div className="px-5 pb-5 space-y-3">
+      <div className="px-5 pb-5 space-y-4">
         {type === 'transfer' ? (
           <>
-            {/* From Account */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 From Account
               </label>
-              <select
-                value={fromAccountId}
-                onChange={(e) => setFromAccountId(e.target.value)}
-                className={inputClass}
-              >
-                <option value="">Select source account</option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
-              </select>
+              <Select value={fromAccountId} onValueChange={(v) => setFromAccountId(v || '')}>
+                <SelectTrigger className="h-11 bg-secondary border-0">
+                  <SelectValue placeholder="Select source account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            {/* To Account */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 To Account
               </label>
-              <select
-                value={toAccountId}
-                onChange={(e) => setToAccountId(e.target.value)}
-                className={inputClass}
-              >
-                <option value="">Select destination account</option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
-              </select>
+              <Select value={toAccountId} onValueChange={(v) => setToAccountId(v || '')}>
+                <SelectTrigger className="h-11 bg-secondary border-0">
+                  <SelectValue placeholder="Select destination account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </>
         ) : (
           <>
-            {/* Category */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Category
               </label>
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                className={inputClass}
-              >
-                <option value="">Select category</option>
-                {filteredCategories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
+              <Select value={categoryId} onValueChange={(v) => setCategoryId(v || '')}>
+                <SelectTrigger className="h-11 bg-secondary border-0">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredCategories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            {/* Account */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Account
               </label>
-              <select
-                value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
-                className={inputClass}
-              >
-                <option value="">Select account</option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
-              </select>
+              <Select value={accountId} onValueChange={(v) => setAccountId(v || '')}>
+                <SelectTrigger className="h-11 bg-secondary border-0">
+                  <SelectValue placeholder="Select account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </>
         )}
 
         {/* Notes */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Notes
           </label>
-          <input
+          <Input
             value={nos}
             onChange={(e) => setNos(e.target.value)}
             placeholder="Add notes..."
-            className={inputClass}
+            className="h-11 bg-secondary border-0"
           />
         </div>
 
         {/* Date & Time */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Date
             </label>
-            <input
+            <Input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className={inputClass}
+              className="h-11 bg-secondary border-0"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               Time
             </label>
-            <input
+            <Input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className={inputClass}
+              className="h-11 bg-secondary border-0"
             />
           </div>
         </div>
@@ -262,8 +275,7 @@ export default function TransactionForm() {
         <Button
           onClick={handleSubmit}
           disabled={saving || amount <= 0}
-          className="w-full h-12 text-base font-semibold"
-          size="lg"
+          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white"
         >
           {saving ? 'Saving...' : isEditing ? 'Update Transaction' : 'Add Transaction'}
         </Button>

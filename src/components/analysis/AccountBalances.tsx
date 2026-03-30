@@ -1,12 +1,10 @@
 import { useMemo } from 'react'
 import useAccountStore from '../../store/accountStore'
-import useCategoryStore from '../../store/categoryStore'
 import useTransactionStore from '../../store/transactionStore'
 import { formatCurrency } from '../../utils/formatters'
 
 export default function AccountBalances() {
   const accounts = useAccountStore((s) => s.accounts)
-  const categories = useCategoryStore((s) => s.categories)
   const transactions = useTransactionStore((s) => s.transactions)
 
   const balances = useMemo(() => {
@@ -40,7 +38,7 @@ export default function AccountBalances() {
 
   if (balances.length === 0) {
     return (
-      <div className="px-4">
+      <div>
         <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Account Balances</h3>
         <p className="text-xs text-text-muted">No accounts found</p>
       </div>
@@ -48,7 +46,7 @@ export default function AccountBalances() {
   }
 
   return (
-    <div className="px-4">
+    <div>
       <h3 className="text-sm font-bold text-text dark:text-text-dark mb-3">Account Balances</h3>
       <div className="glass-card overflow-hidden divide-y divide-white/5">
         {balances.map((acc) => (

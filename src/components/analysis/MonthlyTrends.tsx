@@ -38,7 +38,7 @@ export default function MonthlyTrends() {
 
   if (data.length === 0) {
     return (
-      <div className="px-4">
+      <div>
         <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Monthly Trends</h3>
         <p className="text-xs text-text-muted">No data available for trends</p>
       </div>
@@ -46,7 +46,7 @@ export default function MonthlyTrends() {
   }
 
   return (
-    <div className="px-4">
+    <div className="flex flex-col h-full">
       <h3 className="text-sm font-bold text-text-dark mb-3">Monthly Trends</h3>
       <div className="glass-card p-4">
         <div className="h-56">
@@ -66,7 +66,7 @@ export default function MonthlyTrends() {
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(value: number, name: string) => [
+                formatter={(value: any, name: any) => [
                   formatCurrency(value),
                   name.charAt(0).toUpperCase() + name.slice(1),
                 ]}

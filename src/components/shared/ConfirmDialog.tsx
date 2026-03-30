@@ -1,5 +1,13 @@
-import Modal from './Modal'
-import Button from '../ui/Button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface ConfirmDialogProps {
   isOpen: boolean
@@ -21,24 +29,25 @@ export default function ConfirmDialog({
   danger = false,
 }: ConfirmDialogProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className="p-4 pb-6 space-y-5">
-        <p className="text-sm text-text-muted dark:text-gray-400 leading-relaxed">{message}</p>
-        <div className="flex gap-3">
-          <Button variant="ghost" onClick={onClose} className="flex-1">
-            Cancel
-          </Button>
-          <Button className="flex-1"
-            variant={danger ? 'danger' : 'primary'}
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{message}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className={danger ? 'bg-destructive text-white hover:bg-destructive/90' : ''}
             onClick={() => {
               onConfirm()
               onClose()
             }}
           >
             {confirmLabel}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

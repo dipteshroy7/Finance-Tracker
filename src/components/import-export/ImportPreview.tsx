@@ -12,11 +12,11 @@ export default function ImportPreview({ validRows, errors, duplicateCount }: Imp
     <div className="space-y-4">
       {/* Summary */}
       <div className="grid grid-cols-3 gap-2">
-        <div className="gradient-income rounded-xl py-3 px-2 text-center shadow-lg">
+        <div className="bg-emerald-500 rounded-xl py-3 px-2 text-center shadow-lg">
           <p className="text-xl font-extrabold text-white tabular-nums">{validRows.length}</p>
           <p className="text-[10px] text-white/70 mt-0.5 font-medium">Valid rows</p>
         </div>
-        <div className="gradient-expense rounded-xl py-3 px-2 text-center shadow-lg">
+        <div className="bg-destructive rounded-xl py-3 px-2 text-center shadow-lg">
           <p className="text-xl font-extrabold text-white tabular-nums">{errors.length}</p>
           <p className="text-[10px] text-white/70 mt-0.5 font-medium">Invalid rows</p>
         </div>
@@ -29,10 +29,10 @@ export default function ImportPreview({ validRows, errors, duplicateCount }: Imp
       {/* Error list */}
       {errors.length > 0 && (
         <div>
-          <h4 className="text-xs font-bold text-expense mb-2">Errors</h4>
+          <h4 className="text-xs font-bold text-destructive mb-2">Errors</h4>
           <div className="max-h-32 overflow-y-auto space-y-1">
             {errors.map((err) => (
-              <div key={err.row} className="text-xs text-text-muted bg-expense/5 rounded-lg px-3 py-1.5">
+              <div key={err.row} className="text-xs text-muted-foreground bg-destructive/5 rounded-lg px-3 py-1.5">
                 Row {err.row}: {err.reason}
               </div>
             ))}
@@ -43,34 +43,34 @@ export default function ImportPreview({ validRows, errors, duplicateCount }: Imp
       {/* Preview table */}
       {validRows.length > 0 && (
         <div>
-          <h4 className="text-xs font-bold text-text-dark mb-2">
+          <h4 className="text-xs font-bold text-foreground mb-2">
             Preview (first 10 rows)
           </h4>
-          <div className="glass-card overflow-x-auto">
+          <div className="rounded-xl border bg-card overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-white/8">
-                  <th className="text-left py-2.5 px-3 text-text-muted font-semibold">Type</th>
-                  <th className="text-right py-2.5 px-3 text-text-muted font-semibold">Amount</th>
-                  <th className="text-left py-2.5 px-3 text-text-muted font-semibold">Category</th>
-                  <th className="text-left py-2.5 px-3 text-text-muted font-semibold">Account</th>
+                <tr className="border-b border-border">
+                  <th className="text-left py-2.5 px-3 text-muted-foreground font-semibold">Type</th>
+                  <th className="text-right py-2.5 px-3 text-muted-foreground font-semibold">Amount</th>
+                  <th className="text-left py-2.5 px-3 text-muted-foreground font-semibold">Category</th>
+                  <th className="text-left py-2.5 px-3 text-muted-foreground font-semibold">Account</th>
                 </tr>
               </thead>
               <tbody>
                 {validRows.slice(0, 10).map((row, i) => (
-                  <tr key={i} className="border-b border-white/4">
+                  <tr key={i} className="border-b border-border/50">
                     <td className="py-2 px-3">
                       <span className={`uppercase font-bold text-[10px] ${
-                        row.type === 'income' ? 'text-income' : row.type === 'expense' ? 'text-expense' : 'text-transfer'
+                        row.type === 'income' ? 'text-emerald-500' : row.type === 'expense' ? 'text-destructive' : 'text-blue-400'
                       }`}>
                         {row.type}
                       </span>
                     </td>
-                    <td className="py-2 px-3 text-right font-semibold text-text-dark">
+                    <td className="py-2 px-3 text-right font-semibold text-foreground">
                       {formatCurrency(row.amount)}
                     </td>
-                    <td className="py-2 px-3 text-text-muted truncate max-w-[100px]">{row.category || '-'}</td>
-                    <td className="py-2 px-3 text-text-muted truncate max-w-[100px]">
+                    <td className="py-2 px-3 text-muted-foreground truncate max-w-[100px]">{row.category || '-'}</td>
+                    <td className="py-2 px-3 text-muted-foreground truncate max-w-[100px]">
                       {row.type === 'transfer'
                         ? `${row.fromAccount} → ${row.toAccount}`
                         : row.account || '-'}
@@ -81,7 +81,7 @@ export default function ImportPreview({ validRows, errors, duplicateCount }: Imp
             </table>
           </div>
           {validRows.length > 10 && (
-            <p className="text-xs text-text-muted mt-2">...and {validRows.length - 10} more rows</p>
+            <p className="text-xs text-muted-foreground mt-2">...and {validRows.length - 10} more rows</p>
           )}
         </div>
       )}

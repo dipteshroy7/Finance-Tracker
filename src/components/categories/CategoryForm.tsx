@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import type { Category, CategoryType } from '../../types'
 import useCategoryStore from '../../store/categoryStore'
-import Input from '../ui/Input'
-import Button from '../ui/Button'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { cn } from '@/lib/utils'
 
 interface CategoryFormProps {
   editingCategory: Category | null
@@ -48,57 +50,73 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
   }
 
   return (
-    <div className="p-5 pb-8 space-y-5">
-      <Input
-        label="Category Name"
-        id="cat-name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="e.g., Food, Salary"
-        autoFocus
-      />
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2">
+        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider pl-1 font-sans">
+          Category Name
+        </label>
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g., Food, Salary"
+          className="h-11 rounded-xl bg-secondary border-0 px-4"
+          autoFocus
+        />
+      </div>
 
       {!editingCategory && (
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wider text-text-muted">Type</label>
-          <div className="flex rounded-2xl bg-gray-100 dark:bg-white/5 p-1 gap-1">
-            {(['expense', 'income'] as CategoryType[]).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setType(t)}
-                className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 capitalize ${
-                  type === t
-                    ? `${t === 'income' ? 'gradient-income' : 'gradient-expense'} text-white shadow-lg`
-                    : 'text-text-muted hover:text-text dark:hover:text-text-dark'
-                }`}
+          <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider pl-1 font-sans">
+            Type
+          </label>
+          <Tabs value={type} onValueChange={(v) => setType(v as CategoryType)}>
+            <TabsList className="w-full h-11 p-1">
+              <TabsTrigger
+                value="expense"
+                className={cn(
+                  "flex-1 h-full text-sm font-medium",
+                  type === 'expense' && "!bg-destructive !text-white shadow-sm"
+                )}
               >
-                {t}
-              </button>
-            ))}
-          </div>
+                Expense
+              </TabsTrigger>
+              <TabsTrigger
+                value="income"
+                className={cn(
+                  "flex-1 h-full text-sm font-medium",
+                  type === 'income' && "!bg-emerald-500 !text-white shadow-sm"
+                )}
+              >
+                Income
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       )}
 
-      <Input
-        label="Initial Amount"
-        id="initial-amount"
-        type="number"
-        value={initialAmount || ''}
-        onChange={(e) => setInitialAmount(parseFloat(e.target.value) || 0)}
-        placeholder="0.00"
-        min={0}
-        step={0.01}
-      />
+      <div className="flex flex-col gap-2">
+        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider pl-1 font-sans">
+          Initial Amount
+        </label>
+        <Input
+          type="number"
+          value={initialAmount || ''}
+          onChange={(e) => setInitialAmount(parseFloat(e.target.value) || 0)}
+          placeholder="0.00"
+          className="h-11 rounded-xl bg-secondary border-0 px-4"
+          min={0}
+          step={0.01}
+        />
+      </div>
 
-      <div className="flex gap-3 pt-2">
-        <Button variant="ghost" onClick={onClose} className="flex-1">
+      <div className="flex gap-3 pt-4">
+        <Button variant="outline" onClick={onClose} className="flex-1 rounded-xl h-11">
           Cancel
         </Button>
         <Button
           onClick={handleSubmit}
           disabled={saving || !name.trim()}
-          className="flex-1"
+          className="flex-1 rounded-xl h-11"
         >
           {saving ? 'Saving...' : editingCategory ? 'Update' : 'Add Category'}
         </Button>

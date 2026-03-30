@@ -24,7 +24,7 @@ export default function CategoryBreakdown() {
 
   if (data.length === 0) {
     return (
-      <div className="px-4">
+      <div>
         <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Expense by Category</h3>
         <p className="text-xs text-text-muted">No expense data available</p>
       </div>
@@ -32,7 +32,7 @@ export default function CategoryBreakdown() {
   }
 
   return (
-    <div className="px-4">
+    <div>
       <h3 className="text-sm font-bold text-text dark:text-text-dark mb-3">Expense by Category</h3>
       <div className="glass-card p-4">
         <div className="h-48">
@@ -53,7 +53,7 @@ export default function CategoryBreakdown() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: any) => formatCurrency(value)}
                 contentStyle={{
                   backgroundColor: 'rgba(15, 17, 32, 0.95)',
                   border: '1px solid rgba(148,163,184,0.1)',
