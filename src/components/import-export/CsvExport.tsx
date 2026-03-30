@@ -13,7 +13,7 @@ export default function CsvExport() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-bold text-text-dark">Export CSV</h3>
+      <h3 className="text-sm font-bold text-text dark:text-text-dark">Export CSV</h3>
       <div className="glass-card p-5">
         <p className="text-xs text-text-muted mb-4">
           Export all {transactions.length} transactions to a CSV file.

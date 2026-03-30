@@ -83,7 +83,7 @@ export default function CsvImport() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-bold text-text-dark">Import CSV</h3>
+      <h3 className="text-sm font-bold text-text dark:text-text-dark">Import CSV</h3>
 
       {step === 'upload' && (
         <div className="glass-card border-dashed !border-white/15 p-8 text-center">

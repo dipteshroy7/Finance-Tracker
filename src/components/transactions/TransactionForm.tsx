@@ -1,21 +1,12 @@
 import { useState, useEffect } from 'react'
-import type { TransactionType, Transaction } from '../../types'
+import type { TransactionType } from '../../types'
 import useTransactionStore from '../../store/transactionStore'
 import useCategoryStore from '../../store/categoryStore'
 import useAccountStore from '../../store/accountStore'
 import useUIStore from '../../store/uiStore'
 import NumberPad from '../shared/NumberPad'
-import Select from '../ui/Select'
-import Input from '../ui/Input'
-import DatePicker from '../ui/DatePicker'
 import Button from '../ui/Button'
 import { toLocalDatetime, combineDatetime } from '../../utils/formatters'
-
-const TYPE_TABS: { value: TransactionType; label: string; activeClass: string }[] = [
-  { value: 'expense', label: 'Expense', activeClass: 'gradient-expense text-white shadow-lg shadow-expense/20' },
-  { value: 'income', label: 'Income', activeClass: 'gradient-income text-white shadow-lg shadow-income/20' },
-  { value: 'transfer', label: 'Transfer', activeClass: 'bg-gradient-to-r from-blue-600 to-blue-400 text-white shadow-lg shadow-transfer/20' },
-]
 
 export default function TransactionForm() {
   const editingTransaction = useUIStore((s) => s.editingTransaction)
@@ -40,7 +31,7 @@ export default function TransactionForm() {
   const [date, setDate] = useState(defaultDate)
   const [time, setTime] = useState(defaultTime)
   const [saving, setSaving] = useState(false)
-  const [showNumPad, setShowNumPad] = useState(false)
+  const [showNumPad, setShowNumPad] = useState(true)
 
   useEffect(() => {
     if (editingTransaction) {
@@ -55,14 +46,29 @@ export default function TransactionForm() {
       const { date: d, time: t } = toLocalDatetime(tx.date)
       setDate(d)
       setTime(t)
+      setShowNumPad(false)
     }
   }, [editingTransaction])
 
   const filteredCategories = categories
     .filter((c) => c.type === (type === 'transfer' ? 'expense' : type))
-    .map((c) => ({ value: c.id, label: c.name }))
 
-  const accountOptions = accounts.map((a) => ({ value: a.id, label: a.name }))
+  const amountColor =
+    type === 'expense' ? 'text-expense' : type === 'income' ? 'text-emerald-500' : 'text-primary-light'
+
+  const tabStyles = {
+    expense: 'bg-expense text-white shadow-sm',
+    income: 'bg-emerald-500 text-white shadow-sm',
+    transfer: 'bg-primary text-white shadow-sm',
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 2,
+    }).format(value)
+  }
 
   const handleSubmit = async () => {
     if (amount <= 0) return
@@ -92,130 +98,176 @@ export default function TransactionForm() {
     }
   }
 
+  /* ---- shared field styles ---- */
+  const inputClass =
+    'w-full h-11 rounded-lg bg-gray-100 dark:bg-white/8 border-0 px-4 text-sm text-text dark:text-text-dark placeholder-text-muted/60 outline-none focus:ring-2 focus:ring-primary/40 transition-all'
+
   return (
-    <div className="px-6 pt-5 pb-10">
-      {/* Type tabs */}
-      <div className="flex rounded-2xl bg-white/5 p-1.5 gap-1.5">
-        {TYPE_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => setType(tab.value)}
-            className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 ${
-              type === tab.value
-                ? tab.activeClass
-                : 'text-text-muted hover:text-text-dark'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+    <>
+      {/* ── Transaction Type Tabs ── */}
+      <div className="px-5 pt-5">
+        <div className="flex w-full h-11 rounded-lg bg-gray-100 dark:bg-white/8 p-1 gap-1">
+          {(['expense', 'income', 'transfer'] as TransactionType[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setType(t)}
+              className={`flex-1 h-full text-sm font-medium rounded-md transition-all capitalize ${
+                type === t ? tabStyles[t] : 'text-text-muted hover:text-text dark:hover:text-text-dark'
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Amount display */}
+      {/* ── Amount Display ── */}
       <button
         type="button"
         onClick={() => setShowNumPad(!showNumPad)}
-        className="w-full mt-5 glass-card px-5 py-5 text-center"
+        className="w-full py-6 px-5 flex flex-col items-center justify-center gap-1 hover:bg-black/3 dark:hover:bg-white/3 transition-colors"
       >
-        <p className="text-3xl font-extrabold text-text-dark tabular-nums">
-          ₹{amount ? amount.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '0.00'}
-        </p>
-        <p className="text-[10px] text-primary-light font-semibold mt-2">
-          {showNumPad ? 'Tap to hide calculator' : 'Tap to use calculator'}
-        </p>
+        <span className={`text-4xl font-bold tracking-tight ${amountColor}`}>
+          {formatCurrency(amount)}
+        </span>
+        <span className="text-xs text-text-muted mt-1">
+          {showNumPad ? 'Tap to hide calculator' : 'Tap to show calculator'}
+        </span>
       </button>
 
+      {/* ── Calculator ── */}
       {showNumPad && (
-        <div className="mt-4">
+        <div className="px-5 pb-5">
           <NumberPad value={amount} onChange={setAmount} />
         </div>
       )}
 
-      {/* Divider */}
-      <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-      {/* Form fields */}
-      <div className="space-y-5">
+      {/* ── Form Fields ── */}
+      <div className="px-5 pb-5 space-y-3">
         {type === 'transfer' ? (
           <>
-            <Select
-              label="From Account"
-              id="from-account"
-              options={accountOptions}
-              placeholder="Select source account"
-              value={fromAccountId}
-              onChange={(e) => setFromAccountId(e.target.value)}
-            />
-            <Select
-              label="To Account"
-              id="to-account"
-              options={accountOptions}
-              placeholder="Select destination account"
-              value={toAccountId}
-              onChange={(e) => setToAccountId(e.target.value)}
-            />
+            {/* From Account */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+                From Account
+              </label>
+              <select
+                value={fromAccountId}
+                onChange={(e) => setFromAccountId(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select source account</option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+            </div>
+            {/* To Account */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+                To Account
+              </label>
+              <select
+                value={toAccountId}
+                onChange={(e) => setToAccountId(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select destination account</option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+            </div>
           </>
         ) : (
           <>
-            <Select
-              label="Category"
-              id="category"
-              options={filteredCategories}
-              placeholder="Select category"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-            />
-            <Select
-              label="Account"
-              id="account"
-              options={accountOptions}
-              placeholder="Select account"
-              value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
-            />
+            {/* Category */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+                Category
+              </label>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select category</option>
+                {filteredCategories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            {/* Account */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+                Account
+              </label>
+              <select
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select account</option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+            </div>
           </>
         )}
 
-        <Input
-          label="Notes"
-          id="notes"
-          value={nos}
-          onChange={(e) => setNos(e.target.value)}
-          placeholder="Add notes..."
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <DatePicker
-            label="Date"
-            id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+        {/* Notes */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+            Notes
+          </label>
+          <input
+            value={nos}
+            onChange={(e) => setNos(e.target.value)}
+            placeholder="Add notes..."
+            className={inputClass}
           />
-          <div className="flex flex-col gap-2">
-            <label htmlFor="time" className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+        </div>
+
+        {/* Date & Time */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
+              Date
+            </label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-text-muted uppercase tracking-wider">
               Time
             </label>
             <input
-              id="time"
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-dark outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all duration-200"
+              className={inputClass}
             />
           </div>
         </div>
       </div>
 
-      {/* Submit */}
-      <Button
-        onClick={handleSubmit}
-        disabled={saving || amount <= 0}
-        className="w-full mt-8"
-        size="lg"
-      >
-        {saving ? 'Saving...' : isEditing ? 'Update Transaction' : 'Add Transaction'}
-      </Button>
-    </div>
+      {/* ── Submit Button ── */}
+      <div className="px-5 pb-6">
+        <Button
+          onClick={handleSubmit}
+          disabled={saving || amount <= 0}
+          className="w-full h-12 text-base font-semibold"
+          size="lg"
+        >
+          {saving ? 'Saving...' : isEditing ? 'Update Transaction' : 'Add Transaction'}
+        </Button>
+      </div>
+    </>
   )
 }

@@ -41,7 +41,7 @@ export default function AccountBalances() {
   if (balances.length === 0) {
     return (
       <div className="px-4">
-        <h3 className="text-sm font-bold text-text-dark mb-2">Account Balances</h3>
+        <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Account Balances</h3>
         <p className="text-xs text-text-muted">No accounts found</p>
       </div>
     )
@@ -49,7 +49,7 @@ export default function AccountBalances() {
 
   return (
     <div className="px-4">
-      <h3 className="text-sm font-bold text-text-dark mb-3">Account Balances</h3>
+      <h3 className="text-sm font-bold text-text dark:text-text-dark mb-3">Account Balances</h3>
       <div className="glass-card overflow-hidden divide-y divide-white/5">
         {balances.map((acc) => (
           <div
@@ -62,7 +62,7 @@ export default function AccountBalances() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
               </div>
-              <span className="text-sm text-text-dark font-medium truncate">{acc.name}</span>
+              <span className="text-sm text-text dark:text-text-dark font-medium truncate">{acc.name}</span>
             </div>
             <span
               className={`text-sm font-bold tabular-nums shrink-0 ml-3 ${

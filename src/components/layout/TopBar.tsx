@@ -6,9 +6,9 @@ export default function TopBar() {
   return (
     <header className="sticky top-0 left-0 right-0 z-30 glass pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between px-5 h-14">
-        <h1 className="text-lg font-bold tracking-tight text-text-dark">
+        <h1 className="text-lg font-bold tracking-tight">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-light to-purple-400">Finance</span>
-          <span className="text-text-dark ml-1">Tracker</span>
+          <span className="text-text dark:text-text-dark ml-1">Tracker</span>
         </h1>
         <button
           onClick={toggleDarkMode}

@@ -70,7 +70,7 @@ export default function NumberPad({ value, onChange }: NumberPadProps) {
         <div className="text-right text-xs text-text-muted font-mono min-h-[16px] truncate">
           {expression || '0'}
         </div>
-        <div className="text-right text-2xl font-bold text-text-dark font-mono mt-0.5">
+        <div className="text-right text-2xl font-bold text-text dark:text-text-dark font-mono mt-0.5">
           {result !== null ? formatCurrency(result) : formatCurrency(0)}
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function NumberPad({ value, onChange }: NumberPadProps) {
             className={`${btnBase} ${
               key === '/'
                 ? 'bg-primary/15 text-primary-light'
-                : 'bg-white/5 text-text-dark hover:bg-white/10'
+                : 'bg-gray-100 dark:bg-white/5 text-text dark:text-text-dark hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
             {key === '/' ? '\u00F7' : key}
@@ -103,7 +103,7 @@ export default function NumberPad({ value, onChange }: NumberPadProps) {
             className={`${btnBase} ${
               key === '*'
                 ? 'bg-primary/15 text-primary-light'
-                : 'bg-white/5 text-text-dark hover:bg-white/10'
+                : 'bg-gray-100 dark:bg-white/5 text-text dark:text-text-dark hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
             {key === '*' ? '\u00D7' : key}
@@ -119,7 +119,7 @@ export default function NumberPad({ value, onChange }: NumberPadProps) {
             className={`${btnBase} ${
               key === '-'
                 ? 'bg-primary/15 text-primary-light'
-                : 'bg-white/5 text-text-dark hover:bg-white/10'
+                : 'bg-gray-100 dark:bg-white/5 text-text dark:text-text-dark hover:bg-gray-200 dark:hover:bg-white/10'
             }`}
           >
             {key}
@@ -128,21 +128,21 @@ export default function NumberPad({ value, onChange }: NumberPadProps) {
         <button
           type="button"
           onClick={() => handleDigit('0')}
-          className={`${btnBase} bg-white/5 text-text-dark hover:bg-white/10`}
+          className={`${btnBase} bg-gray-100 dark:bg-white/5 text-text dark:text-text-dark hover:bg-gray-200 dark:hover:bg-white/10`}
         >
           0
         </button>
         <button
           type="button"
           onClick={handleDecimal}
-          className={`${btnBase} bg-white/5 text-text-dark hover:bg-white/10`}
+          className={`${btnBase} bg-gray-100 dark:bg-white/5 text-text dark:text-text-dark hover:bg-gray-200 dark:hover:bg-white/10`}
         >
           .
         </button>
         <button
           type="button"
           onClick={handleBackspace}
-          className={`${btnBase} bg-white/5 text-text-dark hover:bg-white/10`}
+          className={`${btnBase} bg-gray-100 dark:bg-white/5 text-text dark:text-text-dark hover:bg-gray-200 dark:hover:bg-white/10`}
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l7-7 11 0v14H10L3 12z" />

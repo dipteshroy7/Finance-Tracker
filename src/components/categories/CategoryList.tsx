@@ -29,7 +29,7 @@ export default function CategoryList() {
     <>
       <div className="px-4 pt-5">
         {/* Tab toggle */}
-        <div className="flex rounded-2xl bg-white/5 p-1 gap-1 mb-5">
+        <div className="flex rounded-2xl bg-gray-100 dark:bg-white/5 p-1 gap-1 mb-5">
           {(['expense', 'income'] as CategoryType[]).map((t) => (
             <button
               key={t}
@@ -37,7 +37,7 @@ export default function CategoryList() {
               className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 capitalize ${
                 activeTab === t
                   ? `${t === 'income' ? 'gradient-income' : 'gradient-expense'} text-white shadow-lg`
-                  : 'text-text-muted hover:text-text-dark'
+                  : 'text-text-muted hover:text-text dark:hover:text-text-dark'
               }`}
             >
               {t}

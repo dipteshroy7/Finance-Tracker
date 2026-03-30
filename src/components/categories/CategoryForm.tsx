@@ -61,7 +61,7 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
       {!editingCategory && (
         <div className="flex flex-col gap-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-text-muted">Type</label>
-          <div className="flex rounded-2xl bg-white/5 p-1 gap-1">
+          <div className="flex rounded-2xl bg-gray-100 dark:bg-white/5 p-1 gap-1">
             {(['expense', 'income'] as CategoryType[]).map((t) => (
               <button
                 key={t}
@@ -70,7 +70,7 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
                 className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 capitalize ${
                   type === t
                     ? `${t === 'income' ? 'gradient-income' : 'gradient-expense'} text-white shadow-lg`
-                    : 'text-text-muted hover:text-text-dark'
+                    : 'text-text-muted hover:text-text dark:hover:text-text-dark'
                 }`}
               >
                 {t}

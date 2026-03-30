@@ -39,7 +39,7 @@ export default function MonthlyTrends() {
   if (data.length === 0) {
     return (
       <div className="px-4">
-        <h3 className="text-sm font-bold text-text-dark mb-2">Monthly Trends</h3>
+        <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Monthly Trends</h3>
         <p className="text-xs text-text-muted">No data available for trends</p>
       </div>
     )

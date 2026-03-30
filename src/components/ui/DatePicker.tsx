@@ -15,7 +15,7 @@ export default function DatePicker({ label, className = '', id, ...props }: Date
       <input
         id={id}
         type="date"
-        className={`w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-dark outline-none focus:border-primary/50 focus:bg-white/8 focus:ring-1 focus:ring-primary/30 transition-all duration-200 ${className}`}
+        className={`w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-4 py-3 text-sm text-text dark:text-text-dark outline-none focus:border-primary/50 focus:bg-white dark:focus:bg-white/8 focus:ring-1 focus:ring-primary/30 transition-all duration-200 ${className}`}
         {...props}
       />
     </div>

@@ -25,7 +25,7 @@ export default function CategoryBreakdown() {
   if (data.length === 0) {
     return (
       <div className="px-4">
-        <h3 className="text-sm font-bold text-text-dark mb-2">Expense by Category</h3>
+        <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Expense by Category</h3>
         <p className="text-xs text-text-muted">No expense data available</p>
       </div>
     )
@@ -33,7 +33,7 @@ export default function CategoryBreakdown() {
 
   return (
     <div className="px-4">
-      <h3 className="text-sm font-bold text-text-dark mb-3">Expense by Category</h3>
+      <h3 className="text-sm font-bold text-text dark:text-text-dark mb-3">Expense by Category</h3>
       <div className="glass-card p-4">
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -76,9 +76,9 @@ export default function CategoryBreakdown() {
                   className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: COLORS[i % COLORS.length] }}
                 />
-                <span className="text-xs text-text-dark flex-1 truncate">{item.name}</span>
+                <span className="text-xs text-text dark:text-text-dark flex-1 truncate">{item.name}</span>
                 <span className="text-[10px] text-text-muted tabular-nums shrink-0">{pct}%</span>
-                <span className="text-xs font-semibold text-text-dark tabular-nums shrink-0 ml-1 w-24 text-right">
+                <span className="text-xs font-semibold text-text dark:text-text-dark tabular-nums shrink-0 ml-1 w-24 text-right">
                   {formatCurrency(item.value)}
                 </span>
               </div>

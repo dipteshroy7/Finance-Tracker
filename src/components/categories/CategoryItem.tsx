@@ -9,7 +9,7 @@ interface CategoryItemProps {
 
 export default function CategoryItem({ category, onEdit, onDelete }: CategoryItemProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-3.5 hover:bg-white/3 transition-colors">
+    <div className="flex items-center justify-between px-4 py-3.5 hover:bg-black/3 dark:hover:bg-white/3 transition-colors">
       <div className="flex items-center gap-3 min-w-0">
         <div
           className={`w-3 h-3 rounded-full shrink-0 ${
@@ -17,7 +17,7 @@ export default function CategoryItem({ category, onEdit, onDelete }: CategoryIte
           }`}
         />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-text-dark truncate">
+          <p className="text-sm font-semibold text-text dark:text-text-dark truncate">
             {category.name}
           </p>
           <p className="text-[11px] text-text-muted mt-0.5">

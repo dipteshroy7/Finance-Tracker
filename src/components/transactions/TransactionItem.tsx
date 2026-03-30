@@ -43,7 +43,7 @@ export default function TransactionItem({ transaction, onEdit, onDelete }: Trans
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/3 active:bg-white/5 transition-colors duration-150 cursor-pointer"
+      className="flex items-center gap-3 px-4 py-3.5 hover:bg-black/3 dark:hover:bg-white/3 active:bg-black/5 dark:active:bg-white/5 transition-colors duration-150 cursor-pointer"
       onClick={() => onEdit(transaction)}
     >
       {/* Type icon */}
@@ -54,7 +54,7 @@ export default function TransactionItem({ transaction, onEdit, onDelete }: Trans
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm font-semibold text-text-dark truncate">
+          <span className="text-sm font-semibold text-text dark:text-text-dark truncate">
             {category?.name ?? (type === 'transfer' ? 'Transfer' : 'Uncategorized')}
           </span>
           <span className={`text-sm font-bold ${color} shrink-0 tabular-nums`}>
