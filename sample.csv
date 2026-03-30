@@ -1,0 +1,28 @@
+TIME	TYPE	AMOUNT	CATEGORY	ACCOUNT	NOTES
+Sep 01, 2024 12:30 PM	(-) Expense	208	Smoke	.Fi Bank
+Sep 01, 2024 3:47 PM	(*) Transfer	335	-	HDFC BANK->.Fi Bank
+Sep 02, 2024 7:40 PM	(-) Expense	222	Food - Offline	.Fi Bank	Paneer tikka, Naan
+Sep 02, 2024 7:41 PM	(-) Expense	15	Transportation	Cash	2nd Sept Bus Morning
+Sep 02, 2024 7:43 PM	(-) Expense	20	Transportation	HDFC UPI CC	2nd Sept Bus Evening
+Sep 02, 2024 7:45 PM	(*) Transfer	440	-	.Fi Bank->HDFC BANK
+Sep 02, 2024 7:46 PM	(+) Income	10	Share Dividends	HDFC BANK	Bata Dividend
+Sep 02, 2024 8:14 PM	(-) Expense	208	Smoke	.Fi Bank
+Sep 03, 2024 4:59 AM	(+) Income	10	Cashback	Amazon Pay
+Sep 03, 2024 2:30 PM	(-) Expense	85	Food - Offline	HDFC BANK
+Sep 03, 2024 2:39 PM	(-) Expense	36	Smoke	HDFC UPI CC
+Sep 03, 2024 7:36 PM	(-) Expense	5333.33	Home - BLR	SplitWise	Maids - 2 months [Sept- Oct]
+Sep 03, 2024 8:53 PM	(*) Transfer	1500	-	SBI Cashback CC->Amazon Pay
+Sep 03, 2024 8:53 PM	(-) Expense	719	Home - KOL	Amazon Pay	Mom Recharge
+Sep 03, 2024 11:06 PM	(-) Expense	223	Food - Online	Amazon Pay	Swiggy
+Sep 04, 2024 1:42 AM	(*) Transfer	247	-	Amazon Pay->HDFC BANK
+Sep 04, 2024 10:52 AM	(-) Expense	56.67	Groceries	SplitWise	Eggs
+Sep 04, 2024 1:56 PM	(*) Transfer	140	-	.Fi Bank->HDFC BANK
+Sep 04, 2024 1:56 PM	(-) Expense	85	Food - Offline	.Fi Bank
+Sep 04, 2024 6:37 PM	(+) Income	2	Cashback	Amazon Pay	Jio
+Sep 04, 2024 6:47 PM	(*) Transfer	1000	-	SBI Cashback CC->Amazon Pay
+Sep 04, 2024 10:00 PM	(+) Income	1	Cashback	.Fi Bank
+Sep 05, 2024 2:15 AM	(-) Expense	247	Suppliment	Amazon Pay	Multivitamin
+Sep 05, 2024 2:16 AM	(*) Transfer	250	-	Amazon Pay->HDFC BANK
+Sep 05, 2024 11:08 AM	(-) Expense	22	Food - Offline	HDFC UPI CC	Tea Oreo
+Sep 05, 2024 11:09 AM	(+) Income	30.22	Cashback	HDFC BANK
+Sep 05, 2024 11:09 AM	(-) Expense	719	Telephone	Amazon Pay	70 Day Recharge

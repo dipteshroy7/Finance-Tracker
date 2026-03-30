@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:zustand.docs.pmnd.rs)",
+      "WebSearch",
+      "WebFetch(domain:jsdev.space)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(curl -s http://localhost:5173/src/components/transactions/TransactionForm.tsx)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(pkill -f vite)",
+      "Bash(grep -c \"space-y\" dist/assets/*.css)",
+      "Bash(grep \"space-y\" dist/assets/*.css)"
+    ]
+  }
+}

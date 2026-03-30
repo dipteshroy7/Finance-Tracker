@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Primary palette */
+  --color-primary: #6366f1;
+  --color-primary-light: #818cf8;
+  --color-primary-dark: #4f46e5;
+
+  /* Surface colors — deep dark palette */
+  --color-surface: #1e293b;
+  --color-surface-dark: #0b1120;
+  --color-surface-light: #334155;
+  --color-surface-card: rgba(30, 41, 59, 0.6);
+
+  /* Semantic colors */
+  --color-income: #34d399;
+  --color-income-light: #6ee7b7;
+  --color-expense: #f87171;
+  --color-expense-light: #fca5a5;
+  --color-transfer: #60a5fa;
+  --color-transfer-light: #93c5fd;
+
+  /* Border & text */
+  --color-border: #e2e8f0;
+  --color-border-dark: rgba(148, 163, 184, 0.12);
+  --color-text: #0f172a;
+  --color-text-dark: #f1f5f9;
+  --color-text-muted: #94a3b8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Glass Utilities ─── */
+.glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 1rem;
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 1rem;
+}
+
+/* ─── Gradient Utilities ─── */
+.gradient-income {
+  background: linear-gradient(135deg, #059669, #34d399);
+}
+.gradient-expense {
+  background: linear-gradient(135deg, #dc2626, #f87171);
+}
+.gradient-balance {
+  background: linear-gradient(135deg, #4f46e5, #818cf8);
+}
+.gradient-primary {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+}
+.gradient-surface {
+  background: linear-gradient(180deg, #0b1120 0%, #111827 100%);
+}
+
+/* ─── Animations ─── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 2px;
+}
+
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: #f1f5f9;
+}
