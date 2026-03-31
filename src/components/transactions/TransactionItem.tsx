@@ -1,43 +1,13 @@
 import type { Transaction } from '../../types'
 import { formatCurrency, formatDate } from '../../utils/formatters'
 import { TRANSACTION_COLORS } from '../../utils/constants'
-import { 
-  Utensils, Droplet, Zap, Wifi, ShoppingBag, HeartPulse, GraduationCap,
-  Car, Train, Home, Smartphone, Coffee, Gift, Briefcase, IndianRupee, HelpCircle, ArrowRightLeft, TrendingUp, TrendingDown
-} from 'lucide-react'
+import { ArrowRightLeft, TrendingUp, TrendingDown } from 'lucide-react'
+import { getIconComponent } from '../../utils/categoryIcons'
 
 interface TransactionItemProps {
   transaction: Transaction
   onEdit: (tx: Transaction) => void
   onDelete: (id: string) => void
-}
-
-const getCategoryIcon = (categoryName: string | undefined, type: string) => {
-  if (type === 'transfer') return <ArrowRightLeft className="w-5 h-5" />
-  
-  if (!categoryName) {
-    return type === 'income' ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />
-  }
-
-  const name = categoryName.toLowerCase()
-  
-  if (name.includes('food') || name.includes('dining') || name.includes('restaurant')) return <Utensils className="w-5 h-5" />
-  if (name.includes('water')) return <Droplet className="w-5 h-5" />
-  if (name.includes('electric') || name.includes('power')) return <Zap className="w-5 h-5" />
-  if (name.includes('internet') || name.includes('wifi') || name.includes('broadband')) return <Wifi className="w-5 h-5" />
-  if (name.includes('shopping') || name.includes('clothes')) return <ShoppingBag className="w-5 h-5" />
-  if (name.includes('health') || name.includes('medical') || name.includes('doctor')) return <HeartPulse className="w-5 h-5" />
-  if (name.includes('education') || name.includes('school')) return <GraduationCap className="w-5 h-5" />
-  if (name.includes('fuel') || name.includes('gas') || name.includes('car')) return <Car className="w-5 h-5" />
-  if (name.includes('transit') || name.includes('transport') || name.includes('train')) return <Train className="w-5 h-5" />
-  if (name.includes('home') || name.includes('rent')) return <Home className="w-5 h-5" />
-  if (name.includes('phone') || name.includes('mobile')) return <Smartphone className="w-5 h-5" />
-  if (name.includes('coffee') || name.includes('cafe')) return <Coffee className="w-5 h-5" />
-  if (name.includes('gift') || name.includes('donation')) return <Gift className="w-5 h-5" />
-  if (name.includes('salary') || name.includes('work') || name.includes('business')) return <Briefcase className="w-5 h-5" />
-  if (name.includes('investment') || name.includes('interest')) return <IndianRupee className="w-5 h-5" />
-  
-  return type === 'income' ? <TrendingUp className="w-5 h-5" /> : <HelpCircle className="w-5 h-5" />
 }
 
 const iconBg = {
@@ -55,6 +25,19 @@ export default function TransactionItem({ transaction, onEdit, onDelete }: Trans
       ? `${from_account?.name ?? '?'} → ${to_account?.name ?? '?'}`
       : account?.name ?? ''
 
+  // Resolve icon: use stored category icon, or fallback for transfer/uncategorized
+  let IconEl: React.ReactNode
+  if (type === 'transfer') {
+    IconEl = <ArrowRightLeft className="w-5 h-5" />
+  } else if (category?.icon) {
+    const Icon = getIconComponent(category.icon)
+    IconEl = <Icon className="w-5 h-5" />
+  } else if (type === 'income') {
+    IconEl = <TrendingUp className="w-5 h-5" />
+  } else {
+    IconEl = <TrendingDown className="w-5 h-5" />
+  }
+
   return (
     <div
       className="group flex items-center gap-4 px-5 py-4 hover:bg-white/5 active:bg-white/10 transition-all duration-200 cursor-pointer"
@@ -62,7 +45,7 @@ export default function TransactionItem({ transaction, onEdit, onDelete }: Trans
     >
       {/* Type icon */}
       <div className={`w-11 h-11 rounded-2xl ${iconBg[type]} flex items-center justify-center shrink-0 shadow-inner`}>
-        {getCategoryIcon(category?.name, type)}
+        {IconEl}
       </div>
 
       {/* Info */}
@@ -86,7 +69,7 @@ export default function TransactionItem({ transaction, onEdit, onDelete }: Trans
         </div>
       </div>
 
-      {/* Delete button (only visible on hover on larger screens) */}
+      {/* Delete button */}
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(transaction.id) }}
         className="p-2.5 rounded-xl md:opacity-0 group-hover:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 transition-all active:scale-95"

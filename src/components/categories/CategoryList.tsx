@@ -102,7 +102,7 @@ export default function CategoryList() {
               {editingCategory ? 'Edit an existing category' : 'Create a new category'}
             </DialogDescription>
           </DialogHeader>
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 overflow-hidden">
             <CategoryForm
               editingCategory={editingCategory}
               defaultType={activeTab}

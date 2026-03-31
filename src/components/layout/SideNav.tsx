@@ -40,6 +40,15 @@ const icons: Record<string, (active: boolean) => ReactNode> = {
       )}
     </svg>
   ),
+  wallet: (active) => (
+    <svg className="w-5 h-5 shrink-0" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
+      {active ? (
+        <path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5zm-4 1a1 1 0 110-2 1 1 0 010 2zM3 7a2 2 0 012-2h14a2 2 0 012 2H3z" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5zm-4 1a1 1 0 110-2 1 1 0 010 2z" />
+      )}
+    </svg>
+  ),
 }
 
 export default function SideNav() {

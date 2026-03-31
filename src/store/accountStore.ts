@@ -1,13 +1,15 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabaseClient'
 import type { Account } from '../types'
+import useTransactionStore from './transactionStore'
 
 interface AccountState {
   accounts: Account[]
   loading: boolean
   error: string | null
   fetchAccounts: () => Promise<void>
-  addAccount: (name: string) => Promise<Account>
+  addAccount: (name: string, initialAmount?: number, icon?: string) => Promise<Account>
+  updateAccount: (id: string, updates: Partial<Pick<Account, 'name' | 'initial_amount' | 'icon'>>) => Promise<void>
   deleteAccount: (id: string) => Promise<void>
   getOrCreateAccount: (name: string) => Promise<Account>
 }
@@ -30,15 +32,39 @@ const useAccountStore = create<AccountState>((set, get) => ({
     }
   },
 
-  addAccount: async (name: string) => {
+  addAccount: async (name: string, initialAmount = 0, icon?: string) => {
     const { data, error } = await supabase
       .from('accounts')
-      .insert({ name: name.trim() })
+      .insert({ name: name.trim(), initial_amount: initialAmount, icon: icon ?? null })
       .select()
       .single()
     if (error) throw error
     set((state) => ({ accounts: [...state.accounts, data] }))
     return data
+  },
+
+  updateAccount: async (id: string, updates) => {
+    const { data, error } = await supabase
+      .from('accounts')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+    if (error) throw error
+    set((state) => ({
+      accounts: state.accounts.map((a) => (a.id === id ? data : a)),
+    }))
+    // Sync updated account into in-memory transactions
+    const updated = data as Account
+    useTransactionStore.setState((state) => ({
+      transactions: state.transactions.map((t) => {
+        let tx = t
+        if (t.account?.id === id) tx = { ...tx, account: updated }
+        if (t.from_account?.id === id) tx = { ...tx, from_account: updated }
+        if (t.to_account?.id === id) tx = { ...tx, to_account: updated }
+        return tx
+      }),
+    }))
   },
 
   deleteAccount: async (id: string) => {

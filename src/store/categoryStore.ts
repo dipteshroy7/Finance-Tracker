@@ -1,14 +1,15 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, CategoryType } from '../types'
+import useTransactionStore from './transactionStore'
 
 interface CategoryState {
   categories: Category[]
   loading: boolean
   error: string | null
   fetchCategories: () => Promise<void>
-  addCategory: (name: string, type: CategoryType, initialAmount?: number) => Promise<Category>
-  updateCategory: (id: string, updates: Partial<Pick<Category, 'name' | 'initial_amount'>>) => Promise<void>
+  addCategory: (name: string, type: CategoryType, icon?: string) => Promise<Category>
+  updateCategory: (id: string, updates: Partial<Pick<Category, 'name' | 'icon'>>) => Promise<void>
   deleteCategory: (id: string) => Promise<void>
   getOrCreateCategory: (name: string, type: CategoryType) => Promise<Category>
 }
@@ -31,10 +32,10 @@ const useCategoryStore = create<CategoryState>((set, get) => ({
     }
   },
 
-  addCategory: async (name: string, type: CategoryType, initialAmount = 0) => {
+  addCategory: async (name: string, type: CategoryType, icon?: string) => {
     const { data, error } = await supabase
       .from('categories')
-      .insert({ name: name.trim(), type, initial_amount: initialAmount })
+      .insert({ name: name.trim(), type, icon: icon ?? null })
       .select()
       .single()
     if (error) throw error
@@ -52,6 +53,13 @@ const useCategoryStore = create<CategoryState>((set, get) => ({
     if (error) throw error
     set((state) => ({
       categories: state.categories.map((c) => (c.id === id ? data : c)),
+    }))
+    // Sync updated category into in-memory transactions
+    const updatedCategory = data as Category
+    useTransactionStore.setState((state) => ({
+      transactions: state.transactions.map((t) =>
+        t.category?.id === id ? { ...t, category: updatedCategory } : t
+      ),
     }))
   },
 
@@ -73,7 +81,7 @@ const useCategoryStore = create<CategoryState>((set, get) => ({
     const { data, error } = await supabase
       .from('categories')
       .upsert(
-        { name: trimmed, type, initial_amount: 0 },
+        { name: trimmed, type },
         { onConflict: 'name,type' }
       )
       .select()

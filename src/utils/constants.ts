@@ -1,5 +1,6 @@
 export const TABS = [
   { path: '/', label: 'Transactions', icon: 'receipt' },
+  { path: '/accounts', label: 'Accounts', icon: 'wallet' },
   { path: '/analysis', label: 'Analysis', icon: 'chart' },
   { path: '/import-export', label: 'Import/Export', icon: 'transfer' },
   { path: '/categories', label: 'Categories', icon: 'tag' },

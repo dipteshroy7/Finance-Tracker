@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import useTransactionStore from '../../store/transactionStore'
 import useUIStore from '../../store/uiStore'
 import TransactionItem from './TransactionItem'
@@ -6,15 +6,35 @@ import MonthGroup from './MonthGroup'
 import EmptyState from '../shared/EmptyState'
 import LoadingSpinner from '../shared/LoadingSpinner'
 import ConfirmDialog from '../shared/ConfirmDialog'
+import { formatMonth, getMonthKey } from '../../utils/formatters'
+import type { Transaction, MonthGroup as MonthGroupType } from '../../types'
 
 export default function TransactionList() {
   const loading = useTransactionStore((s) => s.loading)
-  const getGroupedByMonth = useTransactionStore((s) => s.getGroupedByMonth)
+  const transactions = useTransactionStore((s) => s.transactions)
   const deleteTransaction = useTransactionStore((s) => s.deleteTransaction)
   const openModal = useUIStore((s) => s.openModal)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const groups = getGroupedByMonth()
+  const groups = useMemo(() => {
+    const map = new Map<string, Transaction[]>()
+    for (const tx of transactions) {
+      const key = getMonthKey(tx.date)
+      if (!map.has(key)) map.set(key, [])
+      map.get(key)!.push(tx)
+    }
+    const result: MonthGroupType[] = []
+    for (const [key, txns] of map) {
+      result.push({
+        key,
+        label: formatMonth(txns[0].date),
+        transactions: txns,
+        totalIncome: txns.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0),
+        totalExpense: txns.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0),
+      })
+    }
+    return result.sort((a, b) => b.key.localeCompare(a.key))
+  }, [transactions])
 
   if (loading) return <LoadingSpinner />
 

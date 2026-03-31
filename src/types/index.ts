@@ -4,6 +4,8 @@ export type CategoryType = 'income' | 'expense'
 export interface Account {
   id: string
   name: string
+  icon: string | null
+  initial_amount: number
   created_at: string
 }
 
@@ -11,7 +13,7 @@ export interface Category {
   id: string
   name: string
   type: CategoryType
-  initial_amount: number
+  icon: string | null
   created_at: string
 }
 

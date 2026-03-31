@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabaseClient'
-import type { Transaction, MonthGroup } from '../types'
-import { formatMonth, getMonthKey } from '../utils/formatters'
+import type { Transaction } from '../types'
 
 interface TransactionState {
   transactions: Transaction[]
@@ -12,7 +11,6 @@ interface TransactionState {
   updateTransaction: (id: string, payload: Partial<Transaction>) => Promise<void>
   deleteTransaction: (id: string) => Promise<void>
   bulkInsertTransactions: (rows: Omit<Transaction, 'id' | 'created_at' | 'category' | 'account' | 'from_account' | 'to_account'>[]) => Promise<Transaction[]>
-  getGroupedByMonth: () => MonthGroup[]
 }
 
 const SELECT_QUERY = `
@@ -30,15 +28,27 @@ const useTransactionStore = create<TransactionState>((set, get) => ({
 
   fetchTransactions: async () => {
     set({ loading: true, error: null })
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(SELECT_QUERY)
-      .order('date', { ascending: false })
-    if (error) {
-      set({ error: error.message, loading: false })
-    } else {
-      set({ transactions: data ?? [], loading: false })
+    const allData: Transaction[] = []
+    const PAGE_SIZE = 1000
+    let from = 0
+    let hasMore = true
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select(SELECT_QUERY)
+        .order('date', { ascending: false })
+        .range(from, from + PAGE_SIZE - 1)
+      if (error) {
+        set({ error: error.message, loading: false })
+        return
+      }
+      allData.push(...(data ?? []))
+      hasMore = (data?.length ?? 0) === PAGE_SIZE
+      from += PAGE_SIZE
     }
+
+    set({ transactions: allData, loading: false })
   },
 
   addTransaction: async (payload) => {
@@ -48,11 +58,20 @@ const useTransactionStore = create<TransactionState>((set, get) => ({
       .select(SELECT_QUERY)
       .single()
     if (error) throw error
-    set((state) => ({
-      transactions: [data, ...state.transactions].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      ),
-    }))
+    // Insert into already-sorted array using binary search
+    set((state) => {
+      const txns = state.transactions
+      const newDate = data.date
+      let lo = 0, hi = txns.length
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1
+        if (txns[mid].date > newDate) lo = mid + 1
+        else hi = mid
+      }
+      const next = [...txns]
+      next.splice(lo, 0, data)
+      return { transactions: next }
+    })
     return data
   },
 
@@ -65,11 +84,19 @@ const useTransactionStore = create<TransactionState>((set, get) => ({
       .select(SELECT_QUERY)
       .single()
     if (error) throw error
-    set((state) => ({
-      transactions: state.transactions
-        .map((t) => (t.id === id ? data : t))
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    }))
+    set((state) => {
+      const filtered = state.transactions.filter((t) => t.id !== id)
+      const newDate = data.date
+      let lo = 0, hi = filtered.length
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1
+        if (filtered[mid].date > newDate) lo = mid + 1
+        else hi = mid
+      }
+      const next = [...filtered]
+      next.splice(lo, 0, data)
+      return { transactions: next }
+    })
   },
 
   deleteTransaction: async (id) => {
@@ -95,42 +122,12 @@ const useTransactionStore = create<TransactionState>((set, get) => ({
     }
     set((state) => ({
       transactions: [...results, ...state.transactions].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        (a, b) => b.date.localeCompare(a.date)
       ),
     }))
     return results
   },
 
-  getGroupedByMonth: () => {
-    const txns = get().transactions
-    const map = new Map<string, Transaction[]>()
-
-    for (const tx of txns) {
-      const key = getMonthKey(tx.date)
-      if (!map.has(key)) map.set(key, [])
-      map.get(key)!.push(tx)
-    }
-
-    const groups: MonthGroup[] = []
-    for (const [key, transactions] of map) {
-      const totalIncome = transactions
-        .filter((t) => t.type === 'income')
-        .reduce((sum, t) => sum + Number(t.amount), 0)
-      const totalExpense = transactions
-        .filter((t) => t.type === 'expense')
-        .reduce((sum, t) => sum + Number(t.amount), 0)
-
-      groups.push({
-        key,
-        label: formatMonth(transactions[0].date),
-        transactions,
-        totalIncome,
-        totalExpense,
-      })
-    }
-
-    return groups.sort((a, b) => b.key.localeCompare(a.key))
-  },
 }))
 
 export default useTransactionStore

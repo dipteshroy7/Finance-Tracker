@@ -1,6 +1,5 @@
 import SummaryCards from '../components/analysis/SummaryCards'
 import CategoryBreakdown from '../components/analysis/CategoryBreakdown'
-import AccountBalances from '../components/analysis/AccountBalances'
 import MonthlyTrends from '../components/analysis/MonthlyTrends'
 
 export default function AnalysisPage() {
@@ -11,7 +10,6 @@ export default function AnalysisPage() {
         <MonthlyTrends />
         <CategoryBreakdown />
       </div>
-      <AccountBalances />
     </div>
   )
 }

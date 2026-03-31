@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
+import { EXPENSE_ICONS, INCOME_ICONS, getDefaultIconForType } from '../../utils/categoryIcons'
 
 interface CategoryFormProps {
   editingCategory: Category | null
@@ -18,16 +19,25 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
 
   const [name, setName] = useState('')
   const [type, setType] = useState<CategoryType>(defaultType)
-  const [initialAmount, setInitialAmount] = useState(0)
+  const [icon, setIcon] = useState(getDefaultIconForType(defaultType))
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (editingCategory) {
       setName(editingCategory.name)
       setType(editingCategory.type)
-      setInitialAmount(Number(editingCategory.initial_amount))
+      setIcon(editingCategory.icon ?? getDefaultIconForType(editingCategory.type))
     }
   }, [editingCategory])
+
+  // Update default icon when type changes (only for new categories)
+  useEffect(() => {
+    if (!editingCategory) {
+      setIcon(getDefaultIconForType(type))
+    }
+  }, [type, editingCategory])
+
+  const icons = type === 'income' ? INCOME_ICONS : EXPENSE_ICONS
 
   const handleSubmit = async () => {
     if (!name.trim()) return
@@ -36,10 +46,10 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
       if (editingCategory) {
         await updateCategory(editingCategory.id, {
           name: name.trim(),
-          initial_amount: initialAmount,
+          icon,
         })
       } else {
-        await addCategory(name.trim(), type, initialAmount)
+        await addCategory(name.trim(), type, icon)
       }
       onClose()
     } catch (err) {
@@ -94,19 +104,44 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
         </div>
       )}
 
+      {/* Icon Picker */}
       <div className="flex flex-col gap-2">
         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider pl-1 font-sans">
-          Initial Amount
+          Icon
         </label>
-        <Input
-          type="number"
-          value={initialAmount || ''}
-          onChange={(e) => setInitialAmount(parseFloat(e.target.value) || 0)}
-          placeholder="0.00"
-          className="h-11 rounded-xl bg-secondary border-0 px-4"
-          min={0}
-          step={0.01}
-        />
+        <div className="overflow-x-auto scrollbar-hide rounded-xl bg-secondary/50 border border-white/5 p-2.5">
+          <div className="flex gap-2 w-max">
+            {Array.from({ length: Math.ceil(icons.length / 2) }, (_, col) => {
+              const top = icons[col * 2]
+              const bottom = icons[col * 2 + 1]
+              return (
+                <div key={col} className="flex flex-col gap-2">
+                  {[top, bottom].filter(Boolean).map((def) => {
+                    const Icon = def.icon
+                    const isSelected = icon === def.name
+                    return (
+                      <button
+                        key={def.name}
+                        type="button"
+                        onClick={() => setIcon(def.name)}
+                        className={cn(
+                          "flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-150",
+                          isSelected
+                            ? type === 'income'
+                              ? "bg-emerald-500 text-white shadow-md scale-105"
+                              : "bg-destructive text-white shadow-md scale-105"
+                            : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                        )}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </button>
+                    )
+                  })}
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="flex gap-3 pt-4">

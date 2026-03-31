@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import type { TransactionType } from '../../types'
 import useTransactionStore from '../../store/transactionStore'
 import useCategoryStore from '../../store/categoryStore'
@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { toLocalDatetime, combineDatetime } from '../../utils/formatters'
+import { toLocalDatetime, combineDatetime, formatCurrency } from '../../utils/formatters'
 import { cn } from '@/lib/utils'
 
 export default function TransactionForm() {
@@ -60,19 +60,13 @@ export default function TransactionForm() {
     }
   }, [editingTransaction])
 
-  const filteredCategories = categories
-    .filter((c) => c.type === (type === 'transfer' ? 'expense' : type))
+  const filteredCategories = useMemo(
+    () => categories.filter((c) => c.type === (type === 'transfer' ? 'expense' : type)),
+    [categories, type]
+  )
 
   const amountColor =
     type === 'expense' ? 'text-destructive' : type === 'income' ? 'text-emerald-500' : 'text-primary'
-
-  const formatCurrencyAmount = (value: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-    }).format(value)
-  }
 
   const handleSubmit = async () => {
     if (amount <= 0) return
@@ -146,7 +140,7 @@ export default function TransactionForm() {
         className="w-full py-6 px-5 flex flex-col items-center justify-center gap-1 hover:bg-muted/50 transition-colors"
       >
         <span className={cn("text-4xl font-bold tracking-tight", amountColor)}>
-          {formatCurrencyAmount(amount)}
+          {formatCurrency(amount)}
         </span>
         <span className="text-xs text-muted-foreground mt-1">
           {showNumPad ? 'Tap to hide calculator' : 'Tap to show calculator'}
@@ -274,7 +268,11 @@ export default function TransactionForm() {
       <div className="px-5 pb-6">
         <Button
           onClick={handleSubmit}
-          disabled={saving || amount <= 0}
+          disabled={
+            saving ||
+            amount <= 0 ||
+            (type === 'transfer' ? (!fromAccountId || !toAccountId) : (!categoryId || !accountId))
+          }
           className="w-full h-12 text-base font-semibold bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white"
         >
           {saving ? 'Saving...' : isEditing ? 'Update Transaction' : 'Add Transaction'}

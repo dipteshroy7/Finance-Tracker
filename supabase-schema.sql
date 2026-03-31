@@ -7,6 +7,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE accounts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL UNIQUE,
+  icon TEXT DEFAULT NULL,
+  initial_amount NUMERIC(12,2) DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -15,7 +17,7 @@ CREATE TABLE categories (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
-  initial_amount NUMERIC(12,2) DEFAULT 0,
+  icon TEXT DEFAULT NULL,
   created_at TIMESTAMPTZ DEFAULT now(),
   UNIQUE (name, type)
 );
@@ -27,9 +29,9 @@ CREATE TABLE transactions (
   type TEXT NOT NULL CHECK (type IN ('income', 'expense', 'transfer')),
   amount NUMERIC(12,2) NOT NULL CHECK (amount > 0),
   category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
-  account_id UUID REFERENCES accounts(id) ON DELETE SET NULL,
-  from_account_id UUID REFERENCES accounts(id) ON DELETE SET NULL,
-  to_account_id UUID REFERENCES accounts(id) ON DELETE SET NULL,
+  account_id UUID REFERENCES accounts(id) ON DELETE CASCADE,
+  from_account_id UUID REFERENCES accounts(id) ON DELETE CASCADE,
+  to_account_id UUID REFERENCES accounts(id) ON DELETE CASCADE,
   nos TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT now()
 );
