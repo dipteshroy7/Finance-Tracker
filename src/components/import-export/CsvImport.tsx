@@ -31,8 +31,22 @@ export default function CsvImport() {
       const content = event.target?.result as string
       const rows = parseCSV(content)
       const result = validateRows(rows)
+
+      // Compute preview duplicate count against existing transactions
+      const existingKeys = new Set(
+        transactions.map(
+          (t) => `${new Date(t.date).getTime()}_${Number(t.amount)}_${t.nos}`
+        )
+      )
+      let previewDups = 0
+      for (const row of result.valid) {
+        const key = `${new Date(row.time).getTime()}_${row.amount}_${row.notes}`
+        if (existingKeys.has(key)) previewDups++
+      }
+
       setValidRows(result.valid)
       setErrors(result.errors)
+      setDuplicateCount(previewDups)
       setStep('preview')
     }
     reader.readAsText(file)
@@ -110,7 +124,7 @@ export default function CsvImport() {
           <ImportPreview
             validRows={validRows}
             errors={errors}
-            duplicateCount={0}
+            duplicateCount={duplicateCount}
           />
           {importError && (
             <div className="rounded-xl border border-destructive/30 px-4 py-3 text-sm text-destructive bg-destructive/5">
@@ -124,10 +138,10 @@ export default function CsvImport() {
             </Button>
             <Button
               onClick={handleImport}
-              disabled={validRows.length === 0}
+              disabled={validRows.length === 0 || validRows.length - duplicateCount <= 0}
               className="flex-1"
             >
-              Import {validRows.length} rows
+              Import {validRows.length - duplicateCount} new {validRows.length - duplicateCount === 1 ? 'row' : 'rows'}
             </Button>
           </div>
         </>
