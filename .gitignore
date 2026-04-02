@@ -3,3 +3,7 @@ dist
 .env
 .env.local
 *.local
+.claude
+.mcp.json
+settings.local.json
+.agent

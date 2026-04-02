@@ -28,12 +28,20 @@ export interface Transaction {
   to_account_id: string | null
   nos: string
   created_at: string
+  updated_at: string
+  is_deleted: boolean
   // Joined relations
   category?: Category | null
   account?: Account | null
   from_account?: Account | null
   to_account?: Account | null
 }
+
+/** Raw transaction record without joined relations (stored in IndexedDB) */
+export type TransactionRecord = Omit<Transaction, 'category' | 'account' | 'from_account' | 'to_account'>
+
+/** Payload for creating/updating a transaction */
+export type TransactionPayload = Omit<Transaction, 'id' | 'created_at' | 'updated_at' | 'is_deleted' | 'category' | 'account' | 'from_account' | 'to_account'>
 
 export interface TransactionFormData {
   type: TransactionType
