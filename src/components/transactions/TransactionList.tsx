@@ -6,9 +6,9 @@ import MonthGroup from './MonthGroup'
 import EmptyState from '../shared/EmptyState'
 import LoadingSpinner from '../shared/LoadingSpinner'
 import ConfirmDialog from '../shared/ConfirmDialog'
-import { formatCurrency, getMonthKey } from '../../utils/formatters'
+import { getMonthKey } from '../../utils/formatters'
 import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react'
-import type { Transaction, MonthGroup as MonthGroupType } from '../../types'
+import type { MonthGroup as MonthGroupType } from '../../types'
 
 function formatMonthLabel(key: string): string {
   const [year, month] = key.split('-').map(Number)

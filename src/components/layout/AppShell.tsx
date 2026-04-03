@@ -18,8 +18,6 @@ export default function AppShell() {
     fetchTransactions()
   }, [fetchTransactions])
 
-  const hasWarning = !isOnline || pendingMutations > 0
-
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <SideNav />
