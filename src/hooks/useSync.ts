@@ -27,8 +27,14 @@ export function useSync(): UseSyncReturn {
   const [pendingMutations, setPendingMutations] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Refresh all stores from the IndexedDB cache
-  const refreshStoresFromCache = useCallback(async () => {
+  // Refresh transaction store from the IndexedDB cache
+  const refreshTransactionsFromCache = useCallback(async () => {
+    const transactions = await syncEngine.loadCachedTransactions()
+    useTransactionStore.setState({ transactions, loading: false })
+  }, [])
+
+  // Refresh all stores from the IndexedDB cache (for full sync)
+  const refreshAllStoresFromCache = useCallback(async () => {
     const [transactions, accounts, categories] = await Promise.all([
       syncEngine.loadCachedTransactions(),
       syncEngine.loadCachedAccounts(),
@@ -51,21 +57,30 @@ export function useSync(): UseSyncReturn {
           await offlineQueue.processQueue()
         }
 
-        const result = await syncEngine.sync(force)
-        await refreshStoresFromCache()
-        setLastSyncedAt(result.timestamp)
-
-        syncLogger.info(
-          `Sync complete (${result.type}): ${result.recordsSynced} synced, ${result.deletedCount} deleted`,
-        )
+        if (force) {
+          // Full sync: re-fetch accounts, categories, and all transactions
+          const result = await syncEngine.sync(true)
+          await refreshAllStoresFromCache()
+          setLastSyncedAt(result.timestamp)
+          syncLogger.info(
+            `Full sync: ${result.recordsSynced} synced, ${result.deletedCount} deleted`,
+          )
+        } else {
+          // Incremental: only sync transactions (accounts/categories already loaded)
+          const result = await syncEngine.syncTransactionsOnly()
+          await refreshTransactionsFromCache()
+          setLastSyncedAt(result.timestamp)
+          syncLogger.info(
+            `Tx sync: ${result.recordsSynced} synced, ${result.deletedCount} deleted`,
+          )
+        }
       } catch (err) {
         syncLogger.error('Sync failed:', err)
-        // If we have cached data, silently fail; UI already shows cached data
       } finally {
         setIsSyncing(false)
       }
     },
-    [isSyncing, refreshStoresFromCache],
+    [isSyncing, refreshTransactionsFromCache, refreshAllStoresFromCache],
   )
 
   const refresh = useCallback(() => runSync(false), [runSync])

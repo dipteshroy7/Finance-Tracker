@@ -9,6 +9,9 @@ export const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000
 const SYNC_META_KEY = 'transactions_lastSyncedAt'
 const PAGE_SIZE = 1000
 
+/** Flag to ensure reference data (accounts/categories) is only fetched once per session */
+let refDataSyncedThisSession = false
+
 // Raw fields to select from Supabase (no joins, for sync/cache)
 const RAW_FIELDS = 'id, date, type, amount, category_id, account_id, from_account_id, to_account_id, nos, created_at, updated_at, is_deleted'
 
@@ -235,14 +238,35 @@ async function bulkSaveToCache(records: TransactionRecord[]): Promise<void> {
 // ─── Main Entry Point ─────────────────────────────────────
 
 /**
- * Run a sync cycle. Syncs reference data, then performs full or delta sync
- * on transactions depending on staleness.
+ * Sync reference data (accounts/categories) only once per session.
+ * Subsequent calls are no-ops unless forced.
+ */
+async function syncReferenceDataOnce(force = false): Promise<void> {
+  if (refDataSyncedThisSession && !force) return
+  await syncReferenceData()
+  refDataSyncedThisSession = true
+}
+
+/**
+ * Run a sync cycle. Syncs reference data once per session,
+ * then performs full or delta sync on transactions.
  */
 async function sync(forceFullSync = false): Promise<SyncResult> {
-  // Always sync reference data (small, fast)
-  await syncReferenceData()
+  // Sync reference data only once per session (or if forced)
+  await syncReferenceDataOnce(forceFullSync)
 
   if (forceFullSync || (await isStale())) {
+    return fullSync()
+  }
+  return deltaSync()
+}
+
+/**
+ * Sync only transactions (skip reference data).
+ * Used for periodic/background refreshes.
+ */
+async function syncTransactionsOnly(): Promise<SyncResult> {
+  if (await isStale()) {
     return fullSync()
   }
   return deltaSync()
@@ -271,9 +295,11 @@ export const syncEngine = {
 
   // Sync operations
   sync,
+  syncTransactionsOnly,
   fullSync,
   deltaSync,
   syncReferenceData,
+  syncReferenceDataOnce,
 
   // Single record cache ops
   saveTransactionToCache,

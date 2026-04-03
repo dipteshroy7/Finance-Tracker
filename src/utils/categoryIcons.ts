@@ -1,14 +1,12 @@
 import {
-  Utensils, Coffee, ShoppingBag, ShoppingCart, Car, Train, Bus, Fuel,
-  Home, Zap, Wifi, Smartphone, Tv, Gamepad2, HeartPulse, Pill,
-  GraduationCap, BookOpen, Scissors, Shirt, Gift, PartyPopper, Cigarette, Wrench,
-  Briefcase, IndianRupee, TrendingUp, Landmark, PiggyBank, Wallet, HandCoins, BadgePercent,
-  Building2, Coins, DollarSign, Banknote, CreditCard, Receipt, ChartLine, ChartPie,
-  TicketPercent, Award, Star, Gem, Package, CircleDollarSign, ArrowRightLeft, HelpCircle,
-  University, Vault, BadgeIndianRupee, WalletCards,
-  Percent, CirclePercent, Bitcoin, QrCode, Shield,
+  Utensils, Coffee, ShoppingBag, ShoppingCart, Car, Train, Bus, Fuel, Home, Zap, Wifi,
+  Smartphone, Tv, Gamepad2, HeartPulse, Pill, GraduationCap, BookOpen, Scissors, Shirt,
+  Gift, PartyPopper, Cigarette, Wrench, Briefcase, IndianRupee, TrendingUp, Landmark,
+  PiggyBank, Wallet, HandCoins, BadgePercent, Building2, Coins, DollarSign, Banknote,
+  CreditCard, Receipt, ChartLine, ChartPie, TicketPercent, Award, Star, Gem, Package,
+  CircleDollarSign, BadgeIndianRupee, WalletCards, Vault, Shield, QrCode, Bitcoin,
+  Percent, HelpCircle, LucideIcon, University
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 
 export interface CategoryIconDef {
   name: string
@@ -98,12 +96,9 @@ export const ACCOUNT_ICONS: CategoryIconDef[] = [
 ]
 
 const ALL_ICONS: Record<string, LucideIcon> = {}
-for (const def of [...EXPENSE_ICONS, ...INCOME_ICONS, ...ACCOUNT_ICONS]) {
-  ALL_ICONS[def.name] = def.icon
+for (const icon of [...EXPENSE_ICONS, ...INCOME_ICONS, ...ACCOUNT_ICONS]) {
+  ALL_ICONS[icon.name] = icon.icon
 }
-// Also add transfer/fallback icons
-ALL_ICONS['arrow-right-left'] = ArrowRightLeft
-ALL_ICONS['help-circle'] = HelpCircle
 
 export function getIconComponent(iconName: string | null | undefined): LucideIcon {
   if (!iconName) return HelpCircle

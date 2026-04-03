@@ -5,11 +5,17 @@ const MAX_DECIMAL_PLACES = 2
 function tokenize(expression: string): string[] {
   const tokens: string[] = []
   let current = ''
-  for (const char of expression) {
+  for (let i = 0; i < expression.length; i++) {
+    const char = expression[i]
     if (OPERATORS.includes(char)) {
-      if (current) tokens.push(current)
-      tokens.push(char)
-      current = ''
+      // Treat '-' as part of the number if it's at the start or after an operator
+      if (char === '-' && (i === 0 || OPERATORS.includes(expression[i - 1]))) {
+        current += char
+      } else {
+        if (current) tokens.push(current)
+        tokens.push(char)
+        current = ''
+      }
     } else {
       current += char
     }
@@ -35,9 +41,16 @@ export function appendDigit(expression: string, digit: string): string {
 }
 
 export function appendOperator(expression: string, operator: string): string {
-  if (expression === '') return ''
+  // Allow leading minus for negative numbers
+  if (expression === '') {
+    return operator === '-' ? '-' : ''
+  }
   const lastChar = expression[expression.length - 1]
   if (OPERATORS.includes(lastChar)) {
+    // Allow minus after another operator for negative operand (e.g. "5*-")
+    if (operator === '-' && lastChar !== '-') {
+      return expression + operator
+    }
     return expression.slice(0, -1) + operator
   }
   if (lastChar === '.') return expression
@@ -108,4 +121,13 @@ export function evaluate(expression: string): number | null {
   }
 
   return Math.round(result * 100) / 100
+}
+
+/** Toggle the sign of the entire expression result */
+export function toggleSign(expression: string): string {
+  if (!expression) return '-'
+  if (expression.startsWith('-')) {
+    return expression.slice(1)
+  }
+  return '-' + expression
 }
