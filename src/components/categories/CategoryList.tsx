@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus, Tags } from 'lucide-react'
 import type { Category, CategoryType } from '../../types'
 import useCategoryStore from '../../store/categoryStore'
@@ -8,6 +8,7 @@ import CategoryForm from './CategoryForm'
 import ConfirmDialog from '../shared/ConfirmDialog'
 import EmptyState from '../shared/EmptyState'
 import LoadingSpinner from '../shared/LoadingSpinner'
+import TransactionListDrawer from '../shared/TransactionListDrawer'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -24,13 +25,22 @@ export default function CategoryList() {
   const loading = useCategoryStore((s) => s.loading)
   const deleteCategory = useCategoryStore((s) => s.deleteCategory)
   const fetchTransactions = useTransactionStore((s) => s.fetchTransactions)
+  const transactions = useTransactionStore((s) => s.transactions)
 
   const [activeTab, setActiveTab] = useState<CategoryType>('expense')
   const [showForm, setShowForm] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
 
   const filtered = categories.filter((c) => c.type === activeTab)
+
+  const selectedTransactions = useMemo(() => {
+    if (!selectedCategory) return []
+    return transactions
+      .filter((tx) => tx.category_id === selectedCategory.id)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }, [transactions, selectedCategory])
 
   if (loading) return <LoadingSpinner />
 
@@ -83,6 +93,7 @@ export default function CategoryList() {
             <CategoryItem
               key={cat.id}
               category={cat}
+              onSelect={(c) => setSelectedCategory(c)}
               onEdit={(c) => {
                 setEditingCategory(c)
                 setShowForm(true)
@@ -92,6 +103,14 @@ export default function CategoryList() {
           ))}
         </div>
       )}
+
+      {/* Transaction list drawer for selected category */}
+      <TransactionListDrawer
+        open={!!selectedCategory}
+        onOpenChange={(open) => { if (!open) setSelectedCategory(null) }}
+        title={selectedCategory?.name ?? ''}
+        transactions={selectedTransactions}
+      />
 
       <Dialog open={showForm} onOpenChange={(open) => !open && setShowForm(false)}>
         <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-border bg-card">

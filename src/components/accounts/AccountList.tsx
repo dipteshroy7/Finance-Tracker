@@ -8,6 +8,7 @@ import AccountForm from './AccountForm'
 import ConfirmDialog from '../shared/ConfirmDialog'
 import EmptyState from '../shared/EmptyState'
 import LoadingSpinner from '../shared/LoadingSpinner'
+import TransactionListDrawer from '../shared/TransactionListDrawer'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -28,11 +29,23 @@ export default function AccountList() {
   const [showForm, setShowForm] = useState(false)
   const [editingAccount, setEditingAccount] = useState<Account | null>(null)
   const [deletingAccount, setDeletingAccount] = useState<Account | null>(null)
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
 
   const balanceMap = useMemo(
     () => computeAccountBalances(accounts, transactions),
     [accounts, transactions],
   )
+
+  const selectedTransactions = useMemo(() => {
+    if (!selectedAccount) return []
+    return transactions
+      .filter((tx) =>
+        tx.account_id === selectedAccount.id ||
+        tx.from_account_id === selectedAccount.id ||
+        tx.to_account_id === selectedAccount.id
+      )
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }, [transactions, selectedAccount])
 
   if (loading) return <LoadingSpinner />
 
@@ -66,6 +79,7 @@ export default function AccountList() {
               key={acc.id}
               account={acc}
               balance={balanceMap.get(acc.id) ?? 0}
+              onSelect={(a) => setSelectedAccount(a)}
               onEdit={(a) => {
                 setEditingAccount(a)
                 setShowForm(true)
@@ -75,6 +89,14 @@ export default function AccountList() {
           ))}
         </div>
       )}
+
+      {/* Transaction list drawer for selected account */}
+      <TransactionListDrawer
+        open={!!selectedAccount}
+        onOpenChange={(open) => { if (!open) setSelectedAccount(null) }}
+        title={selectedAccount?.name ?? ''}
+        transactions={selectedTransactions}
+      />
 
       <Dialog open={showForm} onOpenChange={(open) => !open && setShowForm(false)}>
         <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-border bg-card">
