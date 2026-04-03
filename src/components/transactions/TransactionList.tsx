@@ -7,14 +7,14 @@ import EmptyState from '../shared/EmptyState'
 import LoadingSpinner from '../shared/LoadingSpinner'
 import ConfirmDialog from '../shared/ConfirmDialog'
 import { formatCurrency, getMonthKey } from '../../utils/formatters'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Receipt } from 'lucide-react'
 import type { Transaction, MonthGroup as MonthGroupType } from '../../types'
 
 function formatMonthLabel(key: string): string {
   const [year, month] = key.split('-').map(Number)
   const date = new Date(year, month - 1)
-  const monthName = date.toLocaleDateString('en-US', { month: 'short' })
-  return `${monthName}, ${year}`
+  const monthName = date.toLocaleDateString('en-US', { month: 'long' })
+  return `${monthName} ${year}`
 }
 
 function getCurrentMonthKey(): string {
@@ -35,7 +35,6 @@ export default function TransactionList() {
   const openModal = useUIStore((s) => s.openModal)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  // Default to the latest month that has transaction data
   const latestMonthKey = useMemo(() => {
     if (transactions.length === 0) return getCurrentMonthKey()
     const keys = transactions.map((tx) => getMonthKey(tx.date))
@@ -45,7 +44,6 @@ export default function TransactionList() {
 
   const [activeMonthKey, setActiveMonthKey] = useState<string>(() => getCurrentMonthKey())
 
-  // When transactions load for the first time, jump to the latest month with data
   const [hasInitialized, setHasInitialized] = useState(false)
   useEffect(() => {
     if (!hasInitialized && transactions.length > 0) {
@@ -54,7 +52,6 @@ export default function TransactionList() {
     }
   }, [transactions, latestMonthKey, hasInitialized])
 
-  // Build the group for the currently selected month only
   const activeGroup = useMemo<MonthGroupType | null>(() => {
     const txns = transactions.filter((tx) => getMonthKey(tx.date) === activeMonthKey)
     if (txns.length === 0) return null
@@ -74,38 +71,38 @@ export default function TransactionList() {
 
   return (
     <>
-      {/* ── Month Navigator ── */}
-      <div className="flex items-center justify-center gap-4 py-4 px-5 select-none">
+      {/* Month Navigator */}
+      <div className="flex items-center justify-between py-2 select-none">
         <button
           onClick={goBack}
-          className="p-2 rounded-xl hover:bg-white/10 active:scale-90 text-muted-foreground hover:text-foreground transition-all"
+          className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors duration-150 cursor-pointer"
           aria-label="Previous month"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft size={20} />
         </button>
 
-        <h2 className="text-base font-bold text-foreground min-w-[130px] text-center tabular-nums tracking-wide">
+        <h2 className="text-base font-semibold text-foreground min-w-[160px] text-center tabular-nums">
           {formatMonthLabel(activeMonthKey)}
         </h2>
 
         <button
           onClick={goForward}
-          className="p-2 rounded-xl hover:bg-white/10 active:scale-90 text-muted-foreground hover:text-foreground transition-all"
+          className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors duration-150 cursor-pointer"
           aria-label="Next month"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight size={20} />
         </button>
       </div>
 
-      {/* ── Transaction List for Active Month ── */}
+      {/* Transaction Feed */}
       {activeGroup ? (
-        <div className="space-y-2 py-2 animate-fade-in">
+        <div className="animate-fade-in">
           <MonthGroup
             label={activeGroup.label}
             totalIncome={activeGroup.totalIncome}
             totalExpense={activeGroup.totalExpense}
           />
-          <div className="mx-4 md:mx-0 glass-card overflow-hidden divide-y divide-white/5 border border-white/5 shadow-xl shadow-black/20 rounded-2xl mb-8">
+          <div className="glass-card overflow-hidden divide-y divide-border mt-3">
             {activeGroup.transactions.map((tx) => (
               <TransactionItem
                 key={tx.id}
@@ -115,11 +112,17 @@ export default function TransactionList() {
               />
             ))}
           </div>
+
+          {/* Transaction count */}
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            {activeGroup.transactions.length} transaction{activeGroup.transactions.length !== 1 ? 's' : ''}
+          </p>
         </div>
       ) : (
         <EmptyState
           title="No transactions"
           description={`Nothing recorded for ${formatMonthLabel(activeMonthKey)}`}
+          icon={Receipt}
         />
       )}
 

@@ -1,21 +1,31 @@
+import { Inbox } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+
 interface EmptyStateProps {
   title: string
   description?: string
-  icon?: string
+  icon?: LucideIcon
+  action?: React.ReactNode
 }
 
-export default function EmptyState({ title, description }: EmptyStateProps) {
+export default function EmptyState({
+  title,
+  description,
+  icon: Icon = Inbox,
+  action,
+}: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-6">
-      <div className="w-16 h-16 rounded-2xl glass-card flex items-center justify-center mb-5">
-        <svg className="w-8 h-8 text-text-muted/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-        </svg>
+    <div className="flex flex-col items-center justify-center py-20 px-6 animate-fade-in">
+      <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
+        <Icon size={24} className="text-muted-foreground" strokeWidth={1.5} />
       </div>
-      <h3 className="text-base font-semibold text-text dark:text-text-dark/80">{title}</h3>
+      <h3 className="text-base font-semibold text-foreground">{title}</h3>
       {description && (
-        <p className="text-sm text-text-muted mt-2 text-center max-w-xs">{description}</p>
+        <p className="text-sm text-muted-foreground mt-1.5 text-center max-w-xs">
+          {description}
+        </p>
       )}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   )
 }

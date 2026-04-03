@@ -7,3 +7,4 @@ dist
 .mcp.json
 settings.local.json
 .agent
+claude.md

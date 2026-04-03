@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { Plus, Wallet } from 'lucide-react'
 import type { Account } from '../../types'
 import useAccountStore from '../../store/accountStore'
 import useTransactionStore from '../../store/transactionStore'
@@ -30,22 +31,25 @@ export default function AccountList() {
 
   const balanceMap = useMemo(
     () => computeAccountBalances(accounts, transactions),
-    [accounts, transactions]
+    [accounts, transactions],
   )
 
   if (loading) return <LoadingSpinner />
 
   return (
     <>
-      <div className="px-4 pt-5">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold text-foreground">
+          {accounts.length} account{accounts.length !== 1 ? 's' : ''}
+        </h2>
         <Button
           onClick={() => {
             setEditingAccount(null)
             setShowForm(true)
           }}
-          className="w-full"
+          size="sm"
         >
-          + Add account
+          <Plus size={16} /> Add
         </Button>
       </div>
 
@@ -53,9 +57,10 @@ export default function AccountList() {
         <EmptyState
           title="No accounts"
           description="Add an account to start tracking your finances"
+          icon={Wallet}
         />
       ) : (
-        <div className="mx-4 md:mx-0 mt-4 rounded-2xl glass-card overflow-hidden divide-y divide-white/5 border border-white/5 shadow-xl shadow-black/20 mb-8">
+        <div className="glass-card overflow-hidden divide-y divide-border">
           {accounts.map((acc) => (
             <AccountItem
               key={acc.id}
@@ -72,10 +77,10 @@ export default function AccountList() {
       )}
 
       <Dialog open={showForm} onOpenChange={(open) => !open && setShowForm(false)}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-white/10 glass-card">
+        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-border bg-card">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">
-              {editingAccount ? 'Edit Account' : 'Create Account'}
+            <DialogTitle>
+              {editingAccount ? 'Edit Account' : 'New Account'}
             </DialogTitle>
             <DialogDescription className="sr-only">
               {editingAccount ? 'Edit an existing account' : 'Create a new account'}

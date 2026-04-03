@@ -73,11 +73,11 @@ export default function NumberPad({ value, onChange }: NumberPadProps) {
   }, [result, emit])
 
   const btnBase =
-    'flex items-center justify-center p-3 sm:p-4 rounded-[16px] text-2xl font-normal transition-all duration-200 active:scale-95 select-none focus:outline-none backdrop-blur-md'
+    'flex items-center justify-center p-3 sm:p-4 rounded-xl text-2xl font-normal transition-all duration-150 active:scale-95 select-none focus:outline-none cursor-pointer'
 
-  const opBtn = "bg-primary/10 text-primary hover:bg-primary/20 border border-primary/10"
-  const numBtn = "bg-white/5 text-foreground hover:bg-white/10 border border-white/5 shadow-sm"
-  const eqBtn = "bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/20"
+  const opBtn = 'bg-primary/10 text-primary hover:bg-primary/15 border border-primary/10'
+  const numBtn = 'bg-muted text-foreground hover:bg-accent border border-border'
+  const eqBtn = 'bg-primary text-white font-semibold shadow-md shadow-primary/20'
 
   // Only stripping generic formatting to show raw number if needed, 
   // but formatCurrency gives good localization. We might just strip the code.

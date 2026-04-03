@@ -1,116 +1,111 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import {
+  Receipt,
+  Wallet,
+  BarChart3,
+  ArrowLeftRight,
+  Tags,
+  Sun,
+  Moon,
+  PanelLeftClose,
+  PanelLeft,
+} from 'lucide-react'
 import useDarkMode from '../../hooks/useDarkMode'
 import { TABS } from '../../utils/constants'
-import type { ReactNode } from 'react'
+import useUIStore from '../../store/uiStore'
+import type { LucideIcon } from 'lucide-react'
 
-const icons: Record<string, (active: boolean) => ReactNode> = {
-  receipt: (active) => (
-    <svg className="w-5 h-5 shrink-0" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
-      {active ? (
-        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      )}
-    </svg>
-  ),
-  chart: (active) => (
-    <svg className="w-5 h-5 shrink-0" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
-      {active ? (
-        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      )}
-    </svg>
-  ),
-  transfer: (active) => (
-    <svg className="w-5 h-5 shrink-0" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
-      {active ? (
-        <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-      )}
-    </svg>
-  ),
-  tag: (active) => (
-    <svg className="w-5 h-5 shrink-0" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
-      {active ? (
-        <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-      )}
-    </svg>
-  ),
-  wallet: (active) => (
-    <svg className="w-5 h-5 shrink-0" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.5}>
-      {active ? (
-        <path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5zm-4 1a1 1 0 110-2 1 1 0 010 2zM3 7a2 2 0 012-2h14a2 2 0 012 2H3z" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5zm-4 1a1 1 0 110-2 1 1 0 010 2z" />
-      )}
-    </svg>
-  ),
+const iconMap: Record<string, LucideIcon> = {
+  receipt: Receipt,
+  wallet: Wallet,
+  chart: BarChart3,
+  transfer: ArrowLeftRight,
+  tag: Tags,
 }
 
 export default function SideNav() {
   const location = useLocation()
   const navigate = useNavigate()
   const { darkMode, toggleDarkMode } = useDarkMode()
+  const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed)
+  const toggleSidebar = useUIStore((s) => s.toggleSidebar)
 
   return (
-    <aside className="hidden md:flex flex-col w-64 glass border-r border-white/5 h-screen sticky top-0 shrink-0">
-      <div className="flex h-20 items-center px-8 border-b border-white/5">
-        <h1 className="text-2xl font-bold tracking-tight">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-light to-purple-400">Finance</span>
-          <br/>
-          <span className="text-foreground ml-1">Tracker</span>
-        </h1>
+    <aside
+      className={`hidden md:flex flex-col h-screen sticky top-0 shrink-0 border-r border-border bg-card transition-[width] duration-200 ease-out ${
+        sidebarCollapsed ? 'w-[72px]' : 'w-60'
+      }`}
+    >
+      {/* Logo */}
+      <div className="flex h-16 items-center justify-between px-4 border-b border-border">
+        {!sidebarCollapsed && (
+          <h1 className="text-lg font-bold tracking-tight text-foreground animate-fade-in">
+            <span className="text-primary">Finance</span>
+            <span className="text-foreground"> Tracker</span>
+          </h1>
+        )}
+        <button
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 cursor-pointer"
+          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {sidebarCollapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
+        </button>
       </div>
-      
-      <nav className="flex-1 py-8 px-4 flex flex-col gap-2">
+
+      {/* Navigation */}
+      <nav className="flex-1 py-4 px-3 flex flex-col gap-1">
         {TABS.map((tab) => {
           const isActive =
             tab.path === '/'
               ? location.pathname === '/'
               : location.pathname.startsWith(tab.path)
+          const Icon = iconMap[tab.icon]
 
           return (
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 relative group ${
+              title={sidebarCollapsed ? tab.label : undefined}
+              className={`flex items-center gap-3 rounded-lg transition-all duration-150 relative cursor-pointer ${
+                sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5'
+              } ${
                 isActive
-                  ? 'bg-primary/10 text-primary-light'
-                  : 'text-text-muted hover:bg-white/5 hover:text-foreground'
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               }`}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-lg gradient-primary" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
               )}
-              {icons[tab.icon](isActive)}
-              <span className="text-sm font-semibold tracking-wide">{tab.label}</span>
+              <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />
+              {!sidebarCollapsed && (
+                <span className="text-sm">{tab.label}</span>
+              )}
             </button>
           )
         })}
       </nav>
 
-      <div className="p-6 border-t border-white/5">
+      {/* Footer */}
+      <div className="p-3 border-t border-border">
         <button
           onClick={toggleDarkMode}
-          className="flex items-center gap-4 px-4 py-3.5 w-full rounded-xl transition-all duration-200 text-text-muted hover:bg-white/5 hover:text-foreground"
+          className={`flex items-center gap-3 w-full rounded-lg transition-all duration-150 text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer ${
+            sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-3 py-2.5'
+          }`}
           aria-label="Toggle dark mode"
         >
           {darkMode ? (
-            <svg className="w-5 h-5 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
+            <Sun size={20} strokeWidth={1.5} className="text-amber-500" />
           ) : (
-            <svg className="w-5 h-5 text-muted-foreground shrink-0" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
+            <Moon size={20} strokeWidth={1.5} />
           )}
-          <span className="text-sm font-semibold tracking-wide">
-            {darkMode ? 'Light Mode' : 'Dark Mode'}
-          </span>
+          {!sidebarCollapsed && (
+            <span className="text-sm">
+              {darkMode ? 'Light Mode' : 'Dark Mode'}
+            </span>
+          )}
         </button>
       </div>
     </aside>

@@ -1,17 +1,16 @@
 import useUIStore from '../../store/uiStore'
-import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 
 export default function FAB() {
   const openModal = useUIStore((s) => s.openModal)
 
   return (
-    <Button
+    <button
       onClick={() => openModal()}
-      className="fixed bottom-22 right-5 z-40 w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-primary-light text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95 transition-all duration-200 flex items-center justify-center animate-glow p-0"
+      className="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-40 w-14 h-14 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:bg-primary-dark active:scale-95 transition-all duration-200 flex items-center justify-center animate-glow cursor-pointer"
       aria-label="Add transaction"
     >
-      <Plus size={28} />
-    </Button>
+      <Plus size={26} strokeWidth={2.5} />
+    </button>
   )
 }

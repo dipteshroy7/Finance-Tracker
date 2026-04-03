@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Plus, Tags } from 'lucide-react'
 import type { Category, CategoryType } from '../../types'
 import useCategoryStore from '../../store/categoryStore'
 import useTransactionStore from '../../store/transactionStore'
@@ -35,15 +36,14 @@ export default function CategoryList() {
 
   return (
     <>
-      <div className="px-4 pt-5">
-        {/* Tab toggle */}
+      <div className="flex items-center justify-between mb-4">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CategoryType)}>
-          <TabsList className="w-full h-11 p-1 mb-5">
+          <TabsList className="h-9 p-1">
             <TabsTrigger
               value="expense"
               className={cn(
-                "flex-1 h-full text-sm font-medium capitalize",
-                activeTab === 'expense' && "!bg-destructive !text-white shadow-sm"
+                'text-sm font-medium px-4',
+                activeTab === 'expense' && '!bg-expense/10 !text-expense',
               )}
             >
               Expense
@@ -51,8 +51,8 @@ export default function CategoryList() {
             <TabsTrigger
               value="income"
               className={cn(
-                "flex-1 h-full text-sm font-medium capitalize",
-                activeTab === 'income' && "!bg-emerald-500 !text-white shadow-sm"
+                'text-sm font-medium px-4',
+                activeTab === 'income' && '!bg-income/10 !text-income',
               )}
             >
               Income
@@ -65,9 +65,9 @@ export default function CategoryList() {
             setEditingCategory(null)
             setShowForm(true)
           }}
-          className="w-full"
+          size="sm"
         >
-          + Add {activeTab} category
+          <Plus size={16} /> Add
         </Button>
       </div>
 
@@ -75,9 +75,10 @@ export default function CategoryList() {
         <EmptyState
           title={`No ${activeTab} categories`}
           description={`Add a category to start tracking ${activeTab}s`}
+          icon={Tags}
         />
       ) : (
-        <div className="mx-4 md:mx-0 mt-4 rounded-2xl glass-card overflow-hidden divide-y divide-white/5 border border-white/5 shadow-xl shadow-black/20 mb-8">
+        <div className="glass-card overflow-hidden divide-y divide-border">
           {filtered.map((cat) => (
             <CategoryItem
               key={cat.id}
@@ -93,10 +94,10 @@ export default function CategoryList() {
       )}
 
       <Dialog open={showForm} onOpenChange={(open) => !open && setShowForm(false)}>
-        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-white/10 glass-card">
+        <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-border bg-card">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">
-              {editingCategory ? 'Edit Category' : 'Create Category'}
+            <DialogTitle>
+              {editingCategory ? 'Edit Category' : 'New Category'}
             </DialogTitle>
             <DialogDescription className="sr-only">
               {editingCategory ? 'Edit an existing category' : 'Create a new category'}

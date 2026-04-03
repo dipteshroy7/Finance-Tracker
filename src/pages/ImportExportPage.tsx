@@ -3,9 +3,9 @@ import CsvExport from '../components/import-export/CsvExport'
 
 export default function ImportExportPage() {
   return (
-    <div className="p-4 pt-5 space-y-8">
+    <div className="space-y-8">
       <CsvImport />
-      <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="h-px bg-border" />
       <CsvExport />
     </div>
   )

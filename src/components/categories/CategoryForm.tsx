@@ -85,7 +85,7 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
                 value="expense"
                 className={cn(
                   "flex-1 h-full text-sm font-medium",
-                  type === 'expense' && "!bg-destructive !text-white shadow-sm"
+                  type === 'expense' && "!bg-expense/10 !text-expense"
                 )}
               >
                 Expense
@@ -94,7 +94,7 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
                 value="income"
                 className={cn(
                   "flex-1 h-full text-sm font-medium",
-                  type === 'income' && "!bg-emerald-500 !text-white shadow-sm"
+                  type === 'income' && "!bg-income/10 !text-income"
                 )}
               >
                 Income
@@ -109,7 +109,7 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider pl-1 font-sans">
           Icon
         </label>
-        <div className="overflow-x-auto scrollbar-hide rounded-xl bg-secondary/50 border border-white/5 p-2.5">
+        <div className="overflow-x-auto scrollbar-hide rounded-xl bg-secondary/50 border border-border p-2.5">
           <div className="flex gap-2 w-max">
             {Array.from({ length: Math.ceil(icons.length / 2) }, (_, col) => {
               const top = icons[col * 2]
@@ -128,9 +128,9 @@ export default function CategoryForm({ editingCategory, defaultType, onClose }: 
                           "flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-150",
                           isSelected
                             ? type === 'income'
-                              ? "bg-emerald-500 text-white shadow-md scale-105"
-                              : "bg-destructive text-white shadow-md scale-105"
-                            : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                              ? "bg-income text-white shadow-md scale-105"
+                              : "bg-expense text-white shadow-md scale-105"
+                            : "bg-secondary text-muted-foreground hover:bg-accent"
                         )}
                       >
                         <Icon className="w-5 h-5" />

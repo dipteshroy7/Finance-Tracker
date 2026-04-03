@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { TrendingUp, TrendingDown, Scale } from 'lucide-react'
 import useTransactionStore from '../../store/transactionStore'
 import { formatCurrency } from '../../utils/formatters'
 
@@ -17,22 +18,42 @@ export default function SummaryCards() {
   }, [transactions])
 
   const cards = [
-    { label: 'Income', amount: totalIncome, gradient: 'gradient-income', icon: '↑' },
-    { label: 'Expense', amount: totalExpense, gradient: 'gradient-expense', icon: '↓' },
-    { label: 'Balance', amount: netBalance, gradient: 'gradient-balance', icon: '≡' },
+    {
+      label: 'Income',
+      amount: totalIncome,
+      icon: TrendingUp,
+      color: 'text-income',
+      bg: 'bg-income-subtle',
+    },
+    {
+      label: 'Expense',
+      amount: totalExpense,
+      icon: TrendingDown,
+      color: 'text-expense',
+      bg: 'bg-expense-subtle',
+    },
+    {
+      label: 'Net Savings',
+      amount: netBalance,
+      icon: Scale,
+      color: netBalance >= 0 ? 'text-income' : 'text-expense',
+      bg: netBalance >= 0 ? 'bg-income-subtle' : 'bg-expense-subtle',
+    },
   ]
 
   return (
     <div className="grid grid-cols-3 gap-3">
       {cards.map((card) => (
-        <div key={card.label} className={`${card.gradient} rounded-2xl px-3 py-4 shadow-lg`}>
-          <div className="flex items-center gap-1.5 mb-2">
-            <span className="text-white/60 text-base">{card.icon}</span>
-            <p className="text-[10px] font-bold text-white/70 uppercase tracking-wider">
+        <div key={card.label} className="glass-card p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className={`w-8 h-8 rounded-lg ${card.bg} ${card.color} flex items-center justify-center`}>
+              <card.icon size={16} />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {card.label}
-            </p>
+            </span>
           </div>
-          <p className="text-base font-extrabold text-white tabular-nums leading-tight">
+          <p className={`text-lg font-bold tabular-nums ${card.color}`}>
             {formatCurrency(card.amount)}
           </p>
         </div>

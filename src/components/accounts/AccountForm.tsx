@@ -84,7 +84,7 @@ export default function AccountForm({ editingAccount, onClose }: AccountFormProp
         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider pl-1 font-sans">
           Icon
         </label>
-        <div className="overflow-x-auto scrollbar-hide rounded-xl bg-secondary/50 border border-white/5 p-2.5">
+        <div className="overflow-x-auto scrollbar-hide rounded-xl bg-secondary/50 border border-border p-2.5">
           <div className="flex gap-2 w-max">
             {Array.from({ length: Math.ceil(ACCOUNT_ICONS.length / 2) }, (_, col) => {
               const top = ACCOUNT_ICONS[col * 2]
@@ -103,7 +103,7 @@ export default function AccountForm({ editingAccount, onClose }: AccountFormProp
                           "flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-150",
                           isSelected
                             ? "bg-primary text-white shadow-md scale-105"
-                            : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                            : "bg-secondary text-muted-foreground hover:bg-accent"
                         )}
                       >
                         <Icon className="w-5 h-5" />

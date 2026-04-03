@@ -7,7 +7,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
 import useTransactionStore from '../../store/transactionStore'
 import { formatCurrency, getMonthKey } from '../../utils/formatters'
@@ -36,70 +35,86 @@ export default function MonthlyTrends() {
       })
   }, [transactions])
 
-  if (data.length === 0) {
-    return (
-      <div>
-        <h3 className="text-sm font-bold text-text dark:text-text-dark mb-2">Monthly Trends</h3>
-        <p className="text-xs text-text-muted">No data available for trends</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex flex-col h-full">
-      <h3 className="text-sm font-bold text-text-dark mb-3">Monthly Trends</h3>
-      <div className="glass-card p-4">
-        <div className="h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.1)" />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-              />
-              <Tooltip
-                formatter={(value: any, name: any) => [
-                  formatCurrency(value),
-                  name.charAt(0).toUpperCase() + name.slice(1),
-                ]}
-                contentStyle={{
-                  backgroundColor: 'rgba(15, 17, 32, 0.95)',
-                  border: '1px solid rgba(148,163,184,0.1)',
-                  borderRadius: '12px',
-                  color: '#f1f5f9',
-                  fontSize: '12px',
-                  backdropFilter: 'blur(12px)',
-                }}
-              />
-              <Legend wrapperStyle={{ fontSize: '11px' }} />
-              <Line
-                type="monotone"
-                dataKey="income"
-                stroke="#34d399"
-                strokeWidth={2.5}
-                dot={{ r: 3, fill: '#34d399' }}
-                activeDot={{ r: 5, fill: '#34d399', stroke: '#34d399', strokeWidth: 2 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="expense"
-                stroke="#f87171"
-                strokeWidth={2.5}
-                dot={{ r: 3, fill: '#f87171' }}
-                activeDot={{ r: 5, fill: '#f87171', stroke: '#f87171', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+    <div className="glass-card p-5">
+      <h3 className="text-sm font-semibold text-foreground mb-4">Monthly Trends</h3>
+
+      {data.length === 0 ? (
+        <p className="text-xs text-muted-foreground py-8 text-center">
+          No data available for trends
+        </p>
+      ) : (
+        <>
+          {/* Legend */}
+          <div className="flex items-center gap-5 mb-4">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-income" />
+              <span className="text-xs text-muted-foreground">Income</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-expense" />
+              <span className="text-xs text-muted-foreground">Expense</span>
+            </div>
+          </div>
+
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--border)"
+                  strokeOpacity={0.5}
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+                  axisLine={false}
+                  tickLine={false}
+                  dy={8}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                  dx={-4}
+                />
+                <Tooltip
+                  formatter={(value: any, name: any) => [
+                    formatCurrency(value),
+                    name.charAt(0).toUpperCase() + name.slice(1),
+                  ]}
+                  contentStyle={{
+                    backgroundColor: 'var(--card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '10px',
+                    color: 'var(--foreground)',
+                    fontSize: '12px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: '#10b981', strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: '#10b981', stroke: '#ffffff', strokeWidth: 2 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expense"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: '#ef4444', strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: '#ef4444', stroke: '#ffffff', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </>
+      )}
     </div>
   )
 }

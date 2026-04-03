@@ -3,15 +3,18 @@ import type { Transaction } from '../types'
 
 interface UIState {
   darkMode: boolean
+  sidebarCollapsed: boolean
   isModalOpen: boolean
   editingTransaction: Transaction | null
   toggleDarkMode: () => void
+  toggleSidebar: () => void
   openModal: (transaction?: Transaction | null) => void
   closeModal: () => void
 }
 
 const useUIStore = create<UIState>((set) => ({
   darkMode: localStorage.getItem('darkMode') !== 'false',
+  sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
   isModalOpen: false,
   editingTransaction: null,
 
@@ -25,6 +28,13 @@ const useUIStore = create<UIState>((set) => ({
         document.documentElement.classList.remove('dark')
       }
       return { darkMode: next }
+    }),
+
+  toggleSidebar: () =>
+    set((state) => {
+      const next = !state.sidebarCollapsed
+      localStorage.setItem('sidebarCollapsed', String(next))
+      return { sidebarCollapsed: next }
     }),
 
   openModal: (transaction = null) =>
